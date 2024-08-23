@@ -1,5 +1,5 @@
 {
-	"button":
+	"defaults":
 	{
 		"colours":
 		{
@@ -8,13 +8,31 @@
 			"normal_text": "White"
 		}
 	},
+	"button":
+	{
+		"misc":
+		{
+			"shape": "rounded_rectangle",
+			"shape_corner_radius": "7"
+		}
+	},
 	"panel":
+	{
+		"misc":
+		{
+			"shape": "rounded_rectangle",
+			"shape_corner_radius": "7"
+		}
+	},
+	"#game_title":
 	{
 		"colours":
 		{
-			"normal_border": "White",
-			"normal_bg": "SlateGray",
-			"normal_text": "White"
+			"normal_text": "Green"
+		},
+		"font":
+		{
+			"size": 72
 		}
 	}
 }

@@ -19,7 +19,7 @@ def main():
 
     # Initializing the Gamestate Manager and setting main_menu as the initial state.
     gamestate_manager = GamestateManager()
-    MainMenu(gamestate_manager)
+    MainMenu(ui_manager, gamestate_manager)
     gamestate_manager.set_initial_state("main_menu")
 
     # The almighty gameloop
@@ -29,7 +29,6 @@ def main():
         
         is_running = gamestate_manager.run(screen, dt)
 
-        screen.fill(("black"))
         pygame.display.flip()
     
     # We've left the loop. Have a good life
