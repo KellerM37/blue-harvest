@@ -1,0 +1,20 @@
+{
+	"button":
+	{
+		"colours":
+		{
+			"normal_border": "White",
+			"normal_bg": "SlateGray",
+			"normal_text": "White"
+		}
+	},
+	"panel":
+	{
+		"colours":
+		{
+			"normal_border": "White",
+			"normal_bg": "SlateGray",
+			"normal_text": "White"
+		}
+	}
+}
