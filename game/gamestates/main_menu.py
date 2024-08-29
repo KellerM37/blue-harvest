@@ -31,6 +31,15 @@ class MainMenu(BaseGamestate):
         self.settings_button = UIButton(pygame.Rect(565, 500, 150, 50), "Settings", self.ui_manager)
         self.quit_button = UIButton(pygame.Rect(565, 550, 150, 50), "Exit", self.ui_manager)
 
+    def end(self):
+        self.title_panel.kill()
+        self.game_title.kill()
+        self.play_button.kill()
+        self.settings_button.kill()
+        self.quit_button.kill()
+        print("all items killed")
+        
+
     def run(self, screen, dt):
         for event in pygame.event.get():
             # If window closed, quit game
@@ -42,9 +51,15 @@ class MainMenu(BaseGamestate):
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == self.quit_button:
                     self.time_to_quit = True
+                elif event.ui_element == self.play_button:
+                    pass
+                elif event.ui_element == self.settings_button:
+                    self.new_state = "settings_menu"
+                    self.transition = True
 
         self.ui_manager.update(dt)
 
         screen.blit(self.background, (0, 0))
 
         self.ui_manager.draw_ui(screen)
+

@@ -1,9 +1,12 @@
 import pygame
 import pygame_gui
+
 from data.settings import *
+
 from game.gamestates import gamestate_manager
 from game.gamestates.gamestate_manager import GamestateManager
 from game.gamestates.main_menu import MainMenu
+from game.gamestates.settings_menu import SettingsMenu
 
 def main():
     # Initializing pygame, window, delta_time, and UI master
@@ -19,16 +22,14 @@ def main():
 
     # Initializing the Gamestate Manager and setting main_menu as the initial state.
     gamestate_manager = GamestateManager()
+    SettingsMenu(ui_manager, gamestate_manager)
     MainMenu(ui_manager, gamestate_manager)
     gamestate_manager.set_initial_state("main_menu")
 
     # The almighty gameloop
     while is_running:
-        # FPS limit at 60
         dt = clock.tick(60) / 1000
-        
         is_running = gamestate_manager.run(screen, dt)
-
         pygame.display.flip()
     
     # We've left the loop. Have a good life
