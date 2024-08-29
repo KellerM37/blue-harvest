@@ -5,13 +5,11 @@ from data.settings import *
 
 from game.gamestates import gamestate_manager
 from game.gamestates.gamestate_manager import GamestateManager
-from game.gamestates.main_menu import MainMenu
-from game.gamestates.settings_menu import SettingsMenu
 
 def main():
     # Initializing pygame, window, delta_time, and UI master
     pygame.init()
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN if FULLSCREEN else 0)
     icon = pygame.image.load("ui/LOGO.jpeg")
     pygame.display.set_caption(f"{TITLE} Version: {VERSION}")
     pygame.display.set_icon(icon)
@@ -22,8 +20,7 @@ def main():
 
     # Initializing the Gamestate Manager and setting main_menu as the initial state.
     gamestate_manager = GamestateManager()
-    SettingsMenu(ui_manager, gamestate_manager)
-    MainMenu(ui_manager, gamestate_manager)
+    gamestate_manager.load_states(ui_manager, gamestate_manager)
     gamestate_manager.set_initial_state("main_menu")
 
     # The almighty gameloop

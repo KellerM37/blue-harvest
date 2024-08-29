@@ -24,6 +24,26 @@
 			"shape_corner_radius": "7"
 		}
 	},
+	"drop_down_menu.#drop_down_options_list":
+	{
+		"misc":
+		{
+			"shape": "rounded_rectangle",
+			"shape_corner_radius": "7"
+		}
+	},
+	"#settings":
+	{
+		"colours":
+		{
+			"normal_bg": "DarkSlateGray"
+		},
+		"misc":
+		{
+			"shape": "rounded_rectangle",
+			"shape_corner_radius": "7"
+		}
+	},
 	"#game_title":
 	{
 		"colours":
