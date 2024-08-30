@@ -1,5 +1,6 @@
 from game.gamestates.main_menu import MainMenu
 from game.gamestates.settings_menu import SettingsMenu
+from game.gamestates.game_state import GameState
 
 class GamestateManager:
     def __init__(self):
@@ -10,11 +11,14 @@ class GamestateManager:
     def load_states(self, ui_manager, gamestate_manager):
         SettingsMenu(ui_manager, gamestate_manager)
         MainMenu(ui_manager, gamestate_manager)
+        GameState(ui_manager, gamestate_manager)
+        print(self.states)
 
     # Ensure manager sees gamestates
     def register_state(self, state):
         if state.name not in self.states:
             self.states[state.name] = state
+            print(f"Registered {state.name}")
 
     # As long as we have an active state, stay in the gameloop. Otherwise, exit the loop
     def run(self, screen, dt):

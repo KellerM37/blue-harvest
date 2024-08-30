@@ -21,7 +21,7 @@ def main():
     # Initializing the Gamestate Manager and setting main_menu as the initial state.
     gamestate_manager = GamestateManager()
     gamestate_manager.load_states(ui_manager, gamestate_manager)
-    gamestate_manager.set_initial_state("main_menu")
+    gamestate_manager.set_initial_state(INITIAL_STATE)
 
     # The almighty gameloop
     while is_running:
