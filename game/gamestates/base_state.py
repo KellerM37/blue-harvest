@@ -1,3 +1,6 @@
+import pygame
+from data import settings
+
 class BaseGamestate:
     def __init__(self, name, state_manager):
         self.name = name
@@ -18,3 +21,4 @@ class BaseGamestate:
     # To be overridden
     def run(self):
         pass
+            

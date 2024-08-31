@@ -1,10 +1,9 @@
 # Program deets
 TITLE = "Blue Harvest"
-VERSION = "0.0.14"
+GAME_TITLE = "Fly & Shoot"
+VERSION = "0.0.27"
 AUTHOR = "KellerM37"
 INITIAL_STATE = "main_menu"
-
-DEBUG_MODE = False
 
 # Default settings
 DEFAULT_SCREEN_WIDTH = 1280
@@ -15,3 +14,7 @@ DEFAULT_FULLSCREEN = False
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 FULLSCREEN = False
+
+DEBUG_MODE = True
+DEBUG_SHOW_PLAYER_HITBOX = False
+

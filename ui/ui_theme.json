@@ -6,6 +6,11 @@
 			"normal_border": "White",
 			"normal_bg": "SlateGray",
 			"normal_text": "White"
+		},
+		"font":
+		{
+			"regular_path": "ui/Ldfcomicsans.ttf",
+			"name": "LDFComicSans"
 		}
 	},
 	"button":
@@ -14,17 +19,40 @@
 		{
 			"shape": "rounded_rectangle",
 			"shape_corner_radius": "7"
+		},
+		"font":
+		{
+			"regular_path": "ui/Ldfcomicsans.ttf",
+			"name": "LDFComicSans"
 		}
 	},
 	"panel":
 	{
+		"font":
+		{
+			"regular_path": "ui/Ldfcomicsans.ttf",
+			"name": "LDFComicSans"
+		},
 		"misc":
 		{
 			
 		}
 	},
+	"label":
+	{
+		"font":
+		{
+			"regular_path": "ui/Ldfcomicsans.ttf",
+			"name": "LDFComicSans"
+		}
+	},
 	"drop_down_menu.#drop_down_options_list":
 	{
+		"font":
+		{
+			"regular_path": "ui/Ldfcomicsans.ttf",
+			"name": "LDFComicSans"
+		},
 		"misc":
 		{
 			"shape": "rounded_rectangle",
@@ -37,6 +65,11 @@
 	   {
 		  "dark_bg":"#21282D",
 		  "normal_border": "#999999"
+	   },
+	   "font":
+	   {
+		   "regular_path": "ui/Ldfcomicsans.ttf",
+		   "name": "LDFComicSans"
 	   },
 	   "misc":
 	   {
@@ -53,10 +86,28 @@
 			"normal_bg": "DarkSlateGray",
 			"normal_text": "Black"
 		},
+		"font":
+		{
+			"regular_path": "ui/Ldfcomicsans.ttf",
+			"name": "LDFComicSans"
+		},
 		"misc":
 		{
 			"shape": "rounded_rectangle",
 			"shape_corner_radius": "7"
+		}
+	},
+	"#settings_titles":
+	{
+		"colours":
+		{
+			"normal_text": "Black"
+		},
+		"font":
+		{
+			"regular_path": "ui/Ldfcomicsans.ttf",
+			"size": "24",
+			"name": "LDFComicSans"
 		}
 	},
 	"#settings_bg":

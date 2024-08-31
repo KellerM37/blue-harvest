@@ -4,7 +4,7 @@ from pygame_gui.elements.ui_label import UILabel
 from pygame_gui.elements.ui_button import UIButton
 from pygame_gui.elements.ui_window import UIWindow
 
-from data.settings import AUTHOR, SCREEN_HEIGHT, SCREEN_WIDTH
+from data.settings import *
 from .base_state import BaseGamestate
 
 class MainMenu(BaseGamestate):
@@ -27,7 +27,11 @@ class MainMenu(BaseGamestate):
         # This is currently a disaster. I will fix this later
         self.background = pygame.image.load("ui/20240823_140057.jpg")
 
-        self.game_title = UILabel(pygame.Rect(0, 0, -1, -1), "KLAR GAME", self.ui_manager, object_id="#game_title", anchors={"centerx": "centerx", "top": "top"})
+        self.game_title = UILabel(pygame.Rect(0, 0, -1, -1),
+                                  GAME_TITLE,
+                                  self.ui_manager,
+                                  object_id="#game_title",
+                                  anchors={"centerx": "centerx", "top": "top"})
         game_title_width = self.game_title.rect.width
         game_title_height = self.game_title.rect.height
 
@@ -40,7 +44,7 @@ class MainMenu(BaseGamestate):
         game_title_x = (title_panel_width - game_title_width) // 2
         self.game_title.set_container(self.title_window)
 
-        self.game_credits = UILabel(pygame.Rect(title_panel_x + game_title_x, SCREEN_HEIGHT * 0.251, game_title_width, 100), f"Created by: {AUTHOR}", self.ui_manager, object_id="#game_credits")
+        self.game_credits = UILabel(pygame.Rect(title_panel_x + game_title_x, SCREEN_HEIGHT * 0.251, game_title_width, 100), f"Created by: {AUTHOR}", self.ui_manager)
         
         self.play_button = UIButton(pygame.Rect((SCREEN_WIDTH - 150) // 2, 450, 150, 50), "Play", self.ui_manager)
         self.settings_button = UIButton(pygame.Rect((SCREEN_WIDTH - 150) // 2, 500, 150, 50), "Settings", self.ui_manager)
@@ -65,6 +69,8 @@ class MainMenu(BaseGamestate):
 
             if keys[pygame.K_ESCAPE]:
                 self.time_to_quit = True
+            if keys[pygame.K_F12]:
+                DEBUG_MODE = False
 
             self.ui_manager.process_events(event)
 

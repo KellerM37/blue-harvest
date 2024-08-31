@@ -1,8 +1,11 @@
 import pygame
 import pygame_gui
+
+from game.entities import bullet
 from .base_state import BaseGamestate
 from data import settings
 from game.entities.player import Player
+from game.entities.bullet import Bullet
 
 class GameState(BaseGamestate):
     def __init__(self, ui_manager, state_manager):
@@ -20,9 +23,13 @@ class GameState(BaseGamestate):
         self.updateable = pygame.sprite.Group()
         self.drawable = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
+        self.bullets = pygame.sprite.Group()
 
+        self.playable_area = pygame.Rect(50, 150, settings.SCREEN_WIDTH - 100, settings.SCREEN_HEIGHT - 150)
+        
         self.player.add(self.updateable, self.drawable)
         print(f"Player created! {self.player}")
+
     
     def end(self):
         pass
@@ -41,19 +48,29 @@ class GameState(BaseGamestate):
             if keys[pygame.K_ESCAPE]:
                 self.new_state = "main_menu"
                 self.transition = True
-            
+            if keys[pygame.K_F12]:
+                settings.DEBUG_MODE = False
 
             self.ui_manager.process_events(event)
 
         # Update all sprites
         for x in self.updateable:
-            x.update(dt)
+            x.update(dt, self.playable_area)
+        for x in self.player.bullets:
+            x.update(dt, self.player.test_enemies)
+        for x in self.player.test_enemies:
+            x.update(dt, self.player.bullets)
 
         # Clear and fill the screen
         screen.fill(("black"))
 
+        if settings.DEBUG_SHOW_PLAYER_HITBOX:
+            pygame.draw.rect(screen, ("White"), self.playable_area, width=2) # Debugging
+
         # Draw all sprites
         for x in self.drawable:
             x.draw(screen)
-
-        
+        for x in self.player.bullets:
+            x.draw(screen)
+        for x in self.player.test_enemies:
+            x.draw(screen)
