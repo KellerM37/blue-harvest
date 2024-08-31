@@ -6,6 +6,11 @@
 			"normal_border": "White",
 			"normal_bg": "SlateGray",
 			"normal_text": "White"
+		},
+		"font":
+		{
+			"regular_path": "ui/Ldfcomicsans.ttf",
+			"name": "LDFComicSans"
 		}
 	},
 	"button":
@@ -14,34 +19,111 @@
 		{
 			"shape": "rounded_rectangle",
 			"shape_corner_radius": "7"
+		},
+		"font":
+		{
+			"regular_path": "ui/Ldfcomicsans.ttf",
+			"name": "LDFComicSans"
 		}
 	},
 	"panel":
 	{
+		"font":
+		{
+			"regular_path": "ui/Ldfcomicsans.ttf",
+			"name": "LDFComicSans"
+		},
 		"misc":
 		{
-			"shape": "rounded_rectangle",
-			"shape_corner_radius": "7"
+			
+		}
+	},
+	"label":
+	{
+		"font":
+		{
+			"regular_path": "ui/Ldfcomicsans.ttf",
+			"name": "LDFComicSans"
 		}
 	},
 	"drop_down_menu.#drop_down_options_list":
 	{
-		"misc":
+		"font":
 		{
-			"shape": "rounded_rectangle",
-			"shape_corner_radius": "7"
-		}
-	},
-	"#settings":
-	{
-		"colours":
-		{
-			"normal_bg": "DarkSlateGray"
+			"regular_path": "ui/Ldfcomicsans.ttf",
+			"name": "LDFComicSans"
 		},
 		"misc":
 		{
 			"shape": "rounded_rectangle",
 			"shape_corner_radius": "7"
+		}
+	},
+	"window":
+	{
+	   "colours":
+	   {
+		  "dark_bg":"#21282D",
+		  "normal_border": "#999999"
+	   },
+	   "font":
+	   {
+		   "regular_path": "ui/Ldfcomicsans.ttf",
+		   "name": "LDFComicSans"
+	   },
+	   "misc":
+	   {
+		  "shape": "rounded_rectangle",
+		  "shape_corner_radius": "10",
+		  "enable_title_bar": "0",
+		  "enable_close_button": "0"
+	   }
+	},
+	"#settings":
+	{
+		"colours":
+		{
+			"normal_bg": "DarkSlateGray",
+			"normal_text": "Black"
+		},
+		"font":
+		{
+			"regular_path": "ui/Ldfcomicsans.ttf",
+			"name": "LDFComicSans"
+		},
+		"misc":
+		{
+			"shape": "rounded_rectangle",
+			"shape_corner_radius": "7"
+		}
+	},
+	"#settings_titles":
+	{
+		"colours":
+		{
+			"normal_text": "Black"
+		},
+		"font":
+		{
+			"regular_path": "ui/Ldfcomicsans.ttf",
+			"size": "24",
+			"name": "LDFComicSans"
+		}
+	},
+	"#settings_bg":
+	{
+		"colours":
+		{
+			"dark_bg": "#4c3116",
+			"normal_border": "#231306"
+		},
+		"background_image":
+		{
+				
+		},
+		"misc":
+		{
+			"border_width": "5"
 		}
 	},
 	"#game_title":
@@ -52,7 +134,11 @@
 		},
 		"font":
 		{
-			"size": 72
+			"regular_path": "ui/Ldfcomicsans.ttf",
+      		"size": "72",
+			"name": "LDFComicSans"
+
 		}
+			
 	}
 }

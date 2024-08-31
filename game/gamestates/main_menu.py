@@ -2,9 +2,9 @@ import pygame
 import pygame_gui
 from pygame_gui.elements.ui_label import UILabel
 from pygame_gui.elements.ui_button import UIButton
-from pygame_gui.elements.ui_panel import UIPanel
+from pygame_gui.elements.ui_window import UIWindow
 
-from data.settings import AUTHOR, SCREEN_HEIGHT, SCREEN_WIDTH
+from data.settings import *
 from .base_state import BaseGamestate
 
 class MainMenu(BaseGamestate):
@@ -16,7 +16,7 @@ class MainMenu(BaseGamestate):
         self.state_manager = state_manager
 
         self.title_box = None
-        self.title_panel = None
+        self.title_window = None
         self.game_title = None
         self.play_button = None
         self.settings_button = None
@@ -27,27 +27,32 @@ class MainMenu(BaseGamestate):
         # This is currently a disaster. I will fix this later
         self.background = pygame.image.load("ui/20240823_140057.jpg")
 
-        self.game_title = UILabel(pygame.Rect(0, 0, 400, 100), "KLAR GAME", self.ui_manager, object_id="#game_title")
+        self.game_title = UILabel(pygame.Rect(0, 0, -1, -1),
+                                  GAME_TITLE,
+                                  self.ui_manager,
+                                  object_id="#game_title",
+                                  anchors={"centerx": "centerx", "top": "top"})
         game_title_width = self.game_title.rect.width
         game_title_height = self.game_title.rect.height
 
         title_panel_width = game_title_width + 30
         title_panel_height = game_title_height + 15
         title_panel_x = (SCREEN_WIDTH - title_panel_width) // 2
-        self.title_panel = UIPanel(pygame.Rect(title_panel_x, SCREEN_HEIGHT * 0.185, title_panel_width, title_panel_height), manager=self.ui_manager)
-        self.title_panel.change_layer(0)
+        self.title_window = UIWindow(pygame.Rect(title_panel_x, SCREEN_HEIGHT * 0.185, title_panel_width, title_panel_height), manager=self.ui_manager)
+        self.title_window.change_layer(0)
 
         game_title_x = (title_panel_width - game_title_width) // 2
-        self.game_title.set_relative_position((title_panel_x + game_title_x, SCREEN_HEIGHT * 0.175))
+        self.game_title.set_container(self.title_window)
 
-        self.game_credits = UILabel(pygame.Rect(title_panel_x + game_title_x, SCREEN_HEIGHT * 0.251, game_title_width, 100), f"Created by: {AUTHOR}", self.ui_manager, object_id="#game_credits")
+        self.game_credits = UILabel(pygame.Rect(title_panel_x + game_title_x, SCREEN_HEIGHT * 0.251, game_title_width, 100), f"Created by: {AUTHOR}", self.ui_manager)
         
         self.play_button = UIButton(pygame.Rect((SCREEN_WIDTH - 150) // 2, 450, 150, 50), "Play", self.ui_manager)
         self.settings_button = UIButton(pygame.Rect((SCREEN_WIDTH - 150) // 2, 500, 150, 50), "Settings", self.ui_manager)
         self.quit_button = UIButton(pygame.Rect((SCREEN_WIDTH - 150) // 2, 550, 150, 50), "Exit", self.ui_manager)
 
+
     def end(self):
-        self.title_panel.kill()
+        self.title_window.kill()
         self.game_title.kill()
         self.play_button.kill()
         self.settings_button.kill()
@@ -57,9 +62,15 @@ class MainMenu(BaseGamestate):
 
     def run(self, screen, dt):
         for event in pygame.event.get():
+            keys = pygame.key.get_pressed()
             # If window closed, quit game
             if event.type == pygame.QUIT:
                 self.time_to_quit = True
+
+            if keys[pygame.K_ESCAPE]:
+                self.time_to_quit = True
+            if keys[pygame.K_F12]:
+                DEBUG_MODE = False
 
             self.ui_manager.process_events(event)
 
@@ -67,7 +78,8 @@ class MainMenu(BaseGamestate):
                 if event.ui_element == self.quit_button:
                     self.time_to_quit = True
                 elif event.ui_element == self.play_button:
-                    pass
+                    self.new_state = "game_state"
+                    self.transition = True
                 elif event.ui_element == self.settings_button:
                     self.new_state = "settings_menu"
                     self.transition = True
