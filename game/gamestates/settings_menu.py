@@ -66,8 +66,12 @@ class SettingsMenu(BaseGamestate):
                 elif line.startswith("SCREEN_HEIGHT"):
                     f.write(f'SCREEN_HEIGHT = {settings.SCREEN_HEIGHT}\n')               
                 # Currently, the FULLSCREEN setting is not being saved to the settings.py file so it loads faster
-                #elif line.startswith("FULLSCREEN"):
-                    #f.write(f'FULLSCREEN = {settings.FULLSCREEN}')
+                elif line.startswith("FULLSCREEN"):
+                    f.write(f'FULLSCREEN = {settings.FULLSCREEN}\n')
+                elif line.startswith("DEBUG_MODE"):
+                    f.write(f'DEBUG_MODE = {settings.DEBUG_MODE}\n')
+                elif line.startswith("DEBUG_SHOW_PLAYER_HITBOX"):
+                    f.write(f'DEBUG_SHOW_PLAYER_HITBOX = {settings.DEBUG_SHOW_PLAYER_HITBOX}\n')
                 else:
                     f.write(line)
 
