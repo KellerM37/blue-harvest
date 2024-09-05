@@ -5,40 +5,30 @@ from data import settings
 from .base_entity import BaseEntity
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, x, y, bullet_area):
+    def __init__(self, x, y, bullet_area, rotation=0):
         super().__init__()
         self.surface = pygame.Surface((10, 10))
+        self.rotation = rotation
         self.surface.fill((255, 255, 255))
-        self.rect = self.surface.get_rect(center=(x, y))
-        self.velocity = pygame.Vector2(0, -300)
+        self.position = pygame.Vector2(x, y)
+        self.velocity = pygame.Vector2(0, -300).rotate(rotation)
         self.bullet_area = bullet_area
         self.radius = 5
 
-    def update(self, dt, enemies):
+        self.image, self.rect = self.get_sprite(pygame.image.load("ui/game_assets/missile00.png").convert_alpha())
+
+    def update(self, dt):
         self.rect.y += self.velocity.y * dt
-
-        for enemy in enemies:
-            if self.collides_with(enemy):
-                enemy.kill()
-                self.kill()
-                print("Debug: Bullet hit enemy, deleting")
-
         if not self.bullet_area.colliderect(self.rect):
             self.kill()
             print("Debug: Bullet out of bounds, deleting")
 
     def draw(self, screen):
         screen.blit(self.surface, self.rect)
+        print("Debug: Bullet drawn")
 
-    def collides_with(self, enemy):
-        # Calculate if the bullet collides with a given enemy
-        circle_radius = enemy.radius
-        closest_x = max(enemy.rect.left, min(self.rect.centerx, enemy.rect.right))
-        closest_y = max(enemy.rect.top, min(self.rect.centery, enemy.rect.bottom))
-        distance_x = self.rect.centerx - closest_x
-        distance_y = self.rect.centery - closest_y
-        distance_squared = distance_x**2 + distance_y**2
-        return distance_squared < circle_radius**2
-
-
+    def get_sprite(self, bullet_image):
+        rotated_image = pygame.transform.rotate(bullet_image, self.rotation)
+        bullet_rect = rotated_image.get_rect(center=self.position)
+        return rotated_image, bullet_rect 
     

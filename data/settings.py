@@ -1,9 +1,9 @@
 # Program deets
 TITLE = "Blue Harvest"
 GAME_TITLE = "Fly & Shoot"
-VERSION = "0.0.27"
+VERSION = "0.0.30"
 AUTHOR = "KellerM37"
-INITIAL_STATE = "main_menu"
+INITIAL_STATE = "game_state"
 
 # Default settings
 DEFAULT_SCREEN_WIDTH = 1280
