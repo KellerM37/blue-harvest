@@ -5,7 +5,7 @@ import pygame
 # This will be used until I have player and enemy classes
 
 class BaseEntity(pygame.sprite.Sprite):
-    def __init__(self, x, y, radius):
+    def __init__(self, x, y, radius, health_capacity):
         if hasattr(self, "containers"):
             super().__init__(self.containers)
         else:
@@ -14,6 +14,7 @@ class BaseEntity(pygame.sprite.Sprite):
         self.position = pygame.Vector2(x, y)
         self.velocity = pygame.Vector2(0, 0)
         self.radius = radius
+        self.health_capacity = health_capacity
 
     def draw(self, screen):
         pygame.draw.circle(screen, (255, 255, 255), (int(self.position.x), int(self.position.y)), self.radius)

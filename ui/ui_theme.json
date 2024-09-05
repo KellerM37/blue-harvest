@@ -140,5 +140,20 @@
 
 		}
 			
+	},
+	"#game_over":
+	{
+		"colours":
+		{
+			"normal_text": "Red"
+		},
+		"font":
+		{
+			"regular_path": "ui/Ldfcomicsans.ttf",
+      		"size": "72",
+			"name": "LDFComicSans"
+
+		}
+			
 	}
 }

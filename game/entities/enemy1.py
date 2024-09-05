@@ -1,38 +1,54 @@
 import pygame
+import random
+
+from data.settings import SCREEN_WIDTH, SCREEN_HEIGHT
 from .base_entity import BaseEntity
+from .bullet import Bullet
 
 class TestEnemy(BaseEntity):
+    _enemy_image = None
+    _enemy_rect = None
+
     def __init__(self, x, y, screen_bounds):
-        super().__init__(x, y, radius=25)
+        super().__init__(x, y, radius=25, health_capacity=100)
         self.tmp_red = (255, 0, 0)
         self.position = pygame.Vector2(x, y)
         self.velocity = pygame.Vector2(0, 100)
-        self.enemy_speed = 100
+        self.bullets = pygame.sprite.Group()
+        self._enemy_speed = 130
         self.screen_bounds = screen_bounds
-        self.rect = pygame.Rect(x - self.radius, y - self.radius, self.radius * 2, self.radius * 2)  # Bounding box for the circle
+        self.shot_timer = 0
+        self.bullet_speed = 300
+        if TestEnemy._enemy_image is None or TestEnemy._enemy_rect is None:
+            TestEnemy._enemy_image, TestEnemy._enemy_rect = self.get_sprite(pygame.image.load("ui/game_assets/FighterPlaneV2.png").convert_alpha())
+
+        self.image = TestEnemy._enemy_image
+        self.rect = TestEnemy._enemy_rect.copy()
+        self.rect.center = self.position
 
     def draw(self, screen):
-        pygame.draw.circle(screen, self.tmp_red, (int(self.position.x), int(self.position.y)), self.radius)
+        screen.blit(self.image, self.rect)
+        self.health = 100
 
-    def update(self, dt, bullets):
-        self.position += self.velocity * dt
-
-        for bullet in bullets:
-            if self.collides_with(bullet):
-                bullet.kill()
-                self.kill()
-                print("Debug: Bullet hit enemy, deleting")
-
+    def update(self, dt):
+        self.shot_timer -= dt
+        self.position.y += self._enemy_speed * dt
+        self.rect.y = self.position.y
+        if self.shot_timer <= 0:
+            self.shoot()
         if self.position.y > self.screen_bounds.height:
             self.kill()
-            print("Debug: Enemy out of bounds, deleting")
-    
-    def collides_with(self, bullet):
-        # Calculate if the enemy is hit by a bullet
-        circle_radius = bullet.radius
-        closest_x = max(bullet.rect.left, min(self.rect.centerx, bullet.rect.right))
-        closest_y = max(bullet.rect.top, min(self.rect.centery, bullet.rect.bottom))
-        distance_x = self.rect.centerx - closest_x
-        distance_y = self.rect.centery - closest_y
-        distance_squared = distance_x**2 + distance_y**2
-        return distance_squared < circle_radius**2
+
+    def shoot(self):
+        bullet = Bullet(self.position.x, self.position.y + 50, pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT), rotation=180)
+        bullet.velocity = pygame.Vector2(0, self.bullet_speed)
+        self.bullets.add(bullet)
+        self.shot_timer = random.uniform(1, 3)
+
+    def get_sprite(self, image):
+        ship_selection = pygame.Rect(1064, 0, 1000, 900)
+        yellow_ship = image.subsurface(ship_selection)
+        yellow_ship = pygame.transform.scale(yellow_ship, (100, 100))
+        yellow_ship = pygame.transform.flip(yellow_ship, False, True)
+        ship_rect = yellow_ship.get_rect(center=self.position)
+        return yellow_ship, ship_rect 
