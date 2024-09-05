@@ -21,11 +21,9 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.y += self.velocity.y * dt
         if not self.bullet_area.colliderect(self.rect):
             self.kill()
-            print("Debug: Bullet out of bounds, deleting")
 
     def draw(self, screen):
         screen.blit(self.surface, self.rect)
-        print("Debug: Bullet drawn")
 
     def get_sprite(self, bullet_image):
         rotated_image = pygame.transform.rotate(bullet_image, self.rotation)

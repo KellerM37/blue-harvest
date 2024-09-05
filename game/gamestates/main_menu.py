@@ -69,8 +69,6 @@ class MainMenu(BaseGamestate):
 
             if keys[pygame.K_ESCAPE]:
                 self.time_to_quit = True
-            if keys[pygame.K_F12]:
-                DEBUG_MODE = False
 
             self.ui_manager.process_events(event)
 

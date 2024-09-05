@@ -1,6 +1,7 @@
 from game.gamestates.main_menu import MainMenu
 from game.gamestates.settings_menu import SettingsMenu
 from game.gamestates.game_state import GameState
+from game.gamestates.game_over import GameOver
 
 class GamestateManager:
     def __init__(self):
@@ -9,9 +10,10 @@ class GamestateManager:
 
     # Loads all gamestates, can be recalled to update gamestates
     def load_states(self, ui_manager, gamestate_manager):
-        SettingsMenu(ui_manager, gamestate_manager)
-        MainMenu(ui_manager, gamestate_manager)
-        GameState(ui_manager, gamestate_manager)
+        self.register_state(SettingsMenu(ui_manager, gamestate_manager))
+        self.register_state(MainMenu(ui_manager, gamestate_manager))
+        self.register_state(GameState(ui_manager, gamestate_manager))
+        self.register_state(GameOver(ui_manager, gamestate_manager))
         print(self.states)
 
     # Ensure manager sees gamestates

@@ -10,13 +10,14 @@ from game.entities.enemy1 import TestEnemy
 
 class Player(BaseEntity):
     def __init__(self, x, y):
-        super().__init__(x, y, radius=44, health=100)
+        super().__init__(x, y, radius=44, health_capacity=100)
 
         self.shot_timer = 0
         self.position = pygame.Vector2(x, y)
         self._player_speed = 300
+        self.current_health = 100
         self.bullets = pygame.sprite.Group()
-        self.bullet_speed = -500
+        self.bullet_speed = -700
         self.image, self.rect = self.get_sprite(pygame.image.load("ui/game_assets/FighterPlaneV2.png").convert_alpha())
 
 
