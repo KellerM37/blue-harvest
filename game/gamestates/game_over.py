@@ -24,7 +24,7 @@ class GameOver(BaseGamestate):
                                     "Main Menu",
                                     self.ui_manager)
         self.kill_count = UILabel(pygame.Rect(0, -50, -1, -1),
-                                  f"Kills: {None}",
+                                  f"Kills: {self.state_manager.states['game_state'].kill_count}",
                                   self.ui_manager,
                                   object_id="#kill_count",
                                   anchors={"centerx": "centerx", "centery": "centery"})
