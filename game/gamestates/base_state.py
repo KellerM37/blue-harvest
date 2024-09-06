@@ -1,5 +1,5 @@
 import pygame
-from data import settings
+from game.data import settings
 
 class BaseGamestate:
     def __init__(self, name, state_manager):

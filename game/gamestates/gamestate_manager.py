@@ -14,13 +14,11 @@ class GamestateManager:
         self.register_state(MainMenu(ui_manager, gamestate_manager))
         self.register_state(GameState(ui_manager, gamestate_manager))
         self.register_state(GameOver(ui_manager, gamestate_manager))
-        print(self.states)
 
     # Ensure manager sees gamestates
     def register_state(self, state):
         if state.name not in self.states:
             self.states[state.name] = state
-            print(f"Registered {state.name}")
 
     # As long as we have an active state, stay in the gameloop. Otherwise, exit the loop
     def run(self, screen, dt):
@@ -33,7 +31,6 @@ class GamestateManager:
                 self.active_state.end()
                 self.active_state = self.states[to_state]
                 self.active_state.start()
-                print(f"Transitioning to {to_state}")
             if self.active_state.time_to_quit:
                 return False
         return True

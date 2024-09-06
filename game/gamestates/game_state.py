@@ -2,13 +2,12 @@ import pygame
 import pygame_gui
 import random
 
-from game.entities import bullet
 from .base_state import BaseGamestate
-from data import settings
+from game.data import settings
 from saves import *
 from game.entities.player import Player
-from game.entities.bullet import Bullet
-from game.entities.enemy1 import TestEnemy
+from game.entities.enemy_white_fighter import WhiteEnemyFighter
+from game.entities.enemy_factory import EnemyFactory
 from pygame_gui.elements import *
 
 class GameState(BaseGamestate):
@@ -22,8 +21,12 @@ class GameState(BaseGamestate):
     def start(self):
         player_start = (settings.SCREEN_WIDTH // 2, settings.SCREEN_HEIGHT * 0.9)
         self.playable_area = pygame.Rect(50, 150, settings.SCREEN_WIDTH - 100, settings.SCREEN_HEIGHT - 200)
+        self.screen_bounds = pygame.Rect(0, 0, settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT)
         self.player = Player(player_start[0], player_start[1])
+        self.enemy_factory = EnemyFactory(self.screen_bounds, self)
 
+        self.time_elapsed = 0
+        self.game_length = 0
         self.spawn_timer = 0
         self.kill_count = 0
 
@@ -54,26 +57,18 @@ class GameState(BaseGamestate):
 
     def update(self, dt):
         self.spawn_timer -= dt
+        self.time_elapsed += dt
         self.player.handle_input(dt)
         self.updateable.update(dt, self.playable_area)
         self.player.bullets.update(dt)
         self.enemies.update(dt)
         self.ui_manager.update(dt)
-        self.update_hearts()
         self.check_collisions()
+        self.enemy_factory.update(dt, self.time_elapsed)
 
         for enemy in self.enemies:
             enemy.bullets.update(dt)
-        if self.spawn_timer <= 0:
-            self.spawn_enemy()
-        if self.player.current_health <= 0:
-            if self.player.lives == 0:
-                self.new_state = "game_over"
-                self.transition = True
-            else:
-                self.player.lives -= 1
-                self.player.current_health = 100
-                self.lives_display.set_text(f"Lives: ")
+            
 
     def draw(self, screen):
         self.drawable.draw(screen)
@@ -81,7 +76,8 @@ class GameState(BaseGamestate):
         self.enemies.draw(screen)
         for enemy in self.enemies:
             enemy.bullets.draw(screen)
-        
+            
+
         self.ui_manager.draw_ui(screen)
 
     def check_collisions(self):
@@ -89,24 +85,43 @@ class GameState(BaseGamestate):
             for enemy in self.enemies:
                 if bullet.rect.colliderect(enemy.rect):
                     bullet.kill()
-                    enemy.kill()
-                    self.kill_count += 1
-                    self.player.score = self.kill_count * 100
-                    self.kill_display.set_text(f"Kills: {self.kill_count}")
-                    self.score_display.set_text(f"Score: {self.player.score}")
+                    self.enemy_hit(enemy)
         for enemy in self.enemies:
             for bullet in enemy.bullets:
                 if bullet.rect.colliderect(self.player.rect):
                     bullet.kill()
                     self.player.current_health -= 10
+                    self.player_hit(self.player)
             if enemy.rect.colliderect(self.player.rect):
                 enemy.kill()
+                enemy.health_bar.kill()
                 self.player.current_health -= 75
+                self.player_hit(self.player)
+            
+    def enemy_hit(self, enemy):
+        enemy.current_health -= 50
+        if enemy.current_health <= 0:
+            self.enemy_killed(enemy)
 
-    def spawn_enemy(self):
-        self.spawn_timer = random.uniform(0.5, 2)
-        enemy = TestEnemy(random.uniform(0, settings.SCREEN_WIDTH), -125, pygame.Rect(0, 0, settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT))
-        self.enemies.add(enemy)
+    def enemy_killed(self, enemy):
+        enemy.health_bar.kill()
+        enemy.kill()
+        self.kill_count += 1
+        self.player.score += enemy.point_value
+        self.kill_display.set_text(f"Kills: {self.kill_count}")
+        self.score_display.set_text(f"Score: {self.player.score}")
+
+    def player_hit(self, player):
+        if player.current_health <= 0:
+            if  player.lives == 0:
+                self.game_length = self.time_elapsed
+                self.new_state = "game_over"
+                self.transition = True
+            else:
+                player.lives -= 1
+                player.current_health = 100
+                self.lives_display.set_text(f"Lives: ")
+                self.update_hearts()       
 
     def build_ui(self):
         
@@ -211,6 +226,9 @@ class GameState(BaseGamestate):
                         x.show()
             if keys[pygame.K_F12]:
                 settings.DEBUG_MODE = False
+            if keys[pygame.K_F9]:
+                enemy = self.enemy_factory.spawn_enemy()
+                self.enemies.add(enemy)
 
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == self.resume_button:

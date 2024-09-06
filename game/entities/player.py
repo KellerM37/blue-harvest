@@ -2,38 +2,35 @@ import pygame
 import pygame_gui
 import random
 
-from data.settings import DEBUG_SHOW_PLAYER_HITBOX, SCREEN_WIDTH, SCREEN_HEIGHT
+from game.data.settings import DEBUG_SHOW_PLAYER_HITBOX, SCREEN_WIDTH, SCREEN_HEIGHT
 
 from game.entities.base_entity import BaseEntity
 from game.entities.bullet import Bullet
-from game.entities.enemy1 import TestEnemy
+from game.entities.enemy_white_fighter import WhiteEnemyFighter
 
 class Player(BaseEntity):
     def __init__(self, x, y):
-        super().__init__(x, y, radius=44, health_capacity=100)
-
-        self.shot_timer = 0
+        super().__init__(x, y, health_capacity=100)
         self.position = pygame.Vector2(x, y)
-        self._player_speed = 300
-        self.current_health = 100
         self.bullets = pygame.sprite.Group()
-        self.bullet_speed = -700
-        self.lives = 3
-        self.score = 0
         self.image, self.rect = self.get_sprite(pygame.image.load("ui/game_assets/FighterPlaneV2.png").convert_alpha())
 
+        self.lives = 3
+        self.score = 0
+        self._player_speed = 300
+        self.current_health = self.health_capacity
+
+        self.shot_timer = 0
+        self.bullet_speed = -700
 
     def get_sprite(self, image):
         ship_selection = pygame.Rect(1064, 1800, 1000, 900)
-        yellow_ship = image.subsurface(ship_selection)
-        yellow_ship = pygame.transform.scale(yellow_ship, (100, 100))
-        ship_rect = yellow_ship.get_rect(center=self.position)
-        return yellow_ship, ship_rect 
+        ship_sprite = image.subsurface(ship_selection)
+        ship_sprite = pygame.transform.scale(ship_sprite, (100, 100))
+        ship_rect = ship_sprite.get_rect(center=self.position)
+        return ship_sprite, ship_rect 
        
-    def draw(self, screen):
-        if DEBUG_SHOW_PLAYER_HITBOX:
-            super().draw(screen)
-        
+    def draw(self, screen):        
         screen.blit(self.image, self.rect)
 
     def move_vert(self, dt, direction):
@@ -61,13 +58,11 @@ class Player(BaseEntity):
             self.move_hor(dt, -1)
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             self.move_hor(dt, 1)
-
         if keys[pygame.K_SPACE] and self.shot_timer <= 0:
             self.shoot()
 
     def update(self, dt, playable_area):
         self.shot_timer -= dt
-
         self.position.x = max(playable_area.left, min(self.position.x, playable_area.right))
         self.position.y = max(playable_area.top, min(self.position.y, playable_area.bottom))
         self.rect.center = self.position

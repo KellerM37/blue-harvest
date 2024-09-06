@@ -1,7 +1,7 @@
 # Program deets
 TITLE = "Blue Harvest"
 GAME_TITLE = "Fly & Shoot"
-VERSION = "0.0.4"
+VERSION = "0.0.45"
 AUTHOR = "KellerM37"
 INITIAL_STATE = "main_menu"
 LEADERBOARD_MAX_LENGTH = 10

@@ -1,9 +1,8 @@
 import pygame
 import pygame_gui
 
-from data.settings import *
+from game.data.settings import *
 
-from game.gamestates import gamestate_manager
 from game.gamestates.gamestate_manager import GamestateManager
 
 def main():

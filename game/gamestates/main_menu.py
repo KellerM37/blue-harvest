@@ -3,7 +3,7 @@ import pygame_gui
 import json
 from pygame_gui.elements import *
 
-from data.settings import *
+from game.data.settings import *
 from .base_state import BaseGamestate
 #from saves import *
 

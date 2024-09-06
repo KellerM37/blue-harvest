@@ -1,8 +1,4 @@
-from cgitb import text
-from inspect import FullArgSpec
-from logging import PlaceHolder
-from math import e
-from tracemalloc import start
+
 import pygame
 import pygame_gui
 from pygame_gui.elements.ui_label import UILabel
@@ -10,7 +6,7 @@ from pygame_gui.elements.ui_button import UIButton
 from pygame_gui.elements.ui_panel import UIPanel
 from pygame_gui.elements.ui_drop_down_menu import UIDropDownMenu
 
-from data import settings
+from game.data import settings
 
 from .base_state import BaseGamestate
 

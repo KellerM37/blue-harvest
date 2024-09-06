@@ -59,6 +59,10 @@ target/
 build/
 
 # Visual Studio Code
+.vscode/
+.history/
+
+# JetBrains IDEs
 .idea/
 *.iml
 *.iws

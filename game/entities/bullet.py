@@ -1,8 +1,6 @@
 import pygame
 
-from data import settings
-
-from .base_entity import BaseEntity
+from game.data import settings
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, bullet_area, rotation=0):
