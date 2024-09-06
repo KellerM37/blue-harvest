@@ -2,7 +2,9 @@
 
 After completeing the boot.dev course on writing 'asteroids' in python, I struck inspiration. Using that knowledge, I'm going to write this game. I'm calling it blue harvest, because I have no idea what else to call it (and.. duh). The inspiration for what this will become was some old helicopter rail shooter thing I played years ago. I swear the word "blackhawk" was in the title, but I do not remember.<br>
 I have not completed the entire boot.dev course library (I got to the asteroids clone) and decide "I got this. I have a vision and I'm going to make it. If I don't know it, I'll learn it as I go". So far, I'm happy with what this mentality has produced.<br>
+<br>
 This is a "weekend project" for me. I work full time and have a 4 year old at home. I get 2 days off each week, Might as well "work" through them.<br>
+<br>
 I look forward to seeing how far I go with this.
 
 # Executable for windows
