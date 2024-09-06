@@ -19,6 +19,18 @@ class BaseGamestate:
         pass
 
     # To be overridden
-    def run(self):
+    def build_ui(self):
+        pass
+
+    # To be overridden
+    def update(self, dt):
+        pass
+
+    # To be overridden
+    def draw(self, screen):
+        pass
+
+    # To be overridden
+    def run(self, screen, dt):
         pass
             

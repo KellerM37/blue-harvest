@@ -19,6 +19,7 @@ class Player(BaseEntity):
         self.bullets = pygame.sprite.Group()
         self.bullet_speed = -700
         self.lives = 3
+        self.score = 0
         self.image, self.rect = self.get_sprite(pygame.image.load("ui/game_assets/FighterPlaneV2.png").convert_alpha())
 
 

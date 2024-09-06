@@ -5,6 +5,7 @@ import random
 from game.entities import bullet
 from .base_state import BaseGamestate
 from data import settings
+from saves import *
 from game.entities.player import Player
 from game.entities.bullet import Bullet
 from game.entities.enemy1 import TestEnemy
@@ -17,7 +18,6 @@ class GameState(BaseGamestate):
         self.ui_manager = ui_manager
         self.state_manager = state_manager
 
-        self.kill_count = 0
     
     def start(self):
         player_start = (settings.SCREEN_WIDTH // 2, settings.SCREEN_HEIGHT * 0.9)
@@ -25,6 +25,7 @@ class GameState(BaseGamestate):
         self.player = Player(player_start[0], player_start[1])
 
         self.spawn_timer = 0
+        self.kill_count = 0
 
         # Groups for various sprites to be updated and drawn
         self.updateable = pygame.sprite.Group()
@@ -36,8 +37,6 @@ class GameState(BaseGamestate):
         self.build_ui()
         self.is_paused = False
 
-
-    
     def end(self):
         self.ui_manager.clear_and_reset()
         self.updateable.empty()
@@ -92,7 +91,9 @@ class GameState(BaseGamestate):
                     bullet.kill()
                     enemy.kill()
                     self.kill_count += 1
+                    self.player.score = self.kill_count * 100
                     self.kill_display.set_text(f"Kills: {self.kill_count}")
+                    self.score_display.set_text(f"Score: {self.player.score}")
         for enemy in self.enemies:
             for bullet in enemy.bullets:
                 if bullet.rect.colliderect(self.player.rect):
@@ -103,7 +104,7 @@ class GameState(BaseGamestate):
                 self.player.current_health -= 75
 
     def spawn_enemy(self):
-        self.spawn_timer = random.uniform(1, 2.5)
+        self.spawn_timer = random.uniform(0.5, 2)
         enemy = TestEnemy(random.uniform(0, settings.SCREEN_WIDTH), -125, pygame.Rect(0, 0, settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT))
         self.enemies.add(enemy)
 
@@ -132,6 +133,16 @@ class GameState(BaseGamestate):
                                     anchors={"top": "top", "left": "left"})
         self.lives_display = UILabel(pygame.Rect(15, 60, -1, -1),
                                     f"Lives: ",
+                                    manager=self.ui_manager,
+                                    container=self.player_hud,
+                                    anchors={"top": "top", "left": "left"})
+        self.score_display = UILabel(pygame.Rect(200, 40, -1, -1),
+                                    f"Score: {self.player.score}",
+                                    manager=self.ui_manager,
+                                    container=self.player_hud,
+                                    anchors={"top": "top", "left": "left"})
+        self.hi_score_display = UILabel(pygame.Rect(200, 60, -1, -1),
+                                    f"Hi-Score: {self.state_manager.states['main_menu'].hi_score}",
                                     manager=self.ui_manager,
                                     container=self.player_hud,
                                     anchors={"top": "top", "left": "left"})
@@ -172,6 +183,9 @@ class GameState(BaseGamestate):
                                         container=self.pause_panel,
                                         object_id="#settings_buttons",
                                         anchors={"bottom": "bottom", "centerx": "centerx"})
+        
+    def reset(self):
+        self.kill_count = 0
     
     def run(self, screen, dt):
 
