@@ -4,6 +4,7 @@ GAME_TITLE = "Fly & Shoot"
 VERSION = "0.0.4"
 AUTHOR = "KellerM37"
 INITIAL_STATE = "main_menu"
+LEADERBOARD_MAX_LENGTH = 10
 
 # Default settings
 DEFAULT_SCREEN_WIDTH = 1280
