@@ -61,6 +61,7 @@ build/
 # Visual Studio Code
 .vscode/
 .history/
+*.code-workspace
 
 # JetBrains IDEs
 .idea/

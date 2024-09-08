@@ -61,7 +61,7 @@ class SettingsMenu(BaseGamestate):
             "debug_mode": settings.DEBUG_MODE,
             "hitboxes": settings.DEBUG_SHOW_PLAYER_HITBOX
         }
-        settings_path = "data/settings.py"
+        settings_path = "game/data/settings.py"
     
         # Read the current settings
         with open(settings_path, "r") as f:
