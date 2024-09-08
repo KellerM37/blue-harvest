@@ -8,6 +8,7 @@ from saves import *
 from game.entities.player import Player
 from game.entities.enemy_white_fighter import WhiteEnemyFighter
 from game.entities.enemy_factory import EnemyFactory
+from game.entities.powerup_factory import PowerupFactory
 from pygame_gui.elements import *
 
 class GameState(BaseGamestate):
@@ -20,64 +21,66 @@ class GameState(BaseGamestate):
     
     def start(self):
         player_start = (settings.SCREEN_WIDTH // 2, settings.SCREEN_HEIGHT * 0.9)
-        self.playable_area = pygame.Rect(50, 150, settings.SCREEN_WIDTH - 100, settings.SCREEN_HEIGHT - 200)
         self.screen_bounds = pygame.Rect(0, 0, settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT)
-        self.player = Player(player_start[0], player_start[1])
+        self.player = Player(player_start[0], player_start[1], self.ui_manager)
+
+        # Factory initializations
+        self.powerup_factory = PowerupFactory(self.screen_bounds, self, self.player)
         self.enemy_factory = EnemyFactory(self.screen_bounds, self)
 
+        # Game timers
         self.time_elapsed = 0
         self.game_length = 0
         self.spawn_timer = 0
+
         self.kill_count = 0
 
         # Groups for various sprites to be updated and drawn
-        self.updateable = pygame.sprite.Group()
+        self.updatable = pygame.sprite.Group()
         self.drawable = pygame.sprite.Group()
+        self.powerups = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
+        self.enemy_bullets = pygame.sprite.Group()
+        self.player_bullets = pygame.sprite.Group()
 
-        self.player.add(self.updateable, self.drawable)
+        self.player.add(self.updatable, self.drawable)
 
         self.build_ui()
         self.is_paused = False
 
     def end(self):
         self.ui_manager.clear_and_reset()
-        self.updateable.empty()
+        self.updatable.empty()
         self.drawable.empty()
+        self.powerups.empty()
         self.enemies.empty()
-        self.player.bullets.empty()
+        self.enemy_bullets.empty()
+        self.player_bullets.empty()
         self.player.kill()
-
-    def update_hearts(self):
-        for i, heart_ui in enumerate(self.hearts):
-            if i < self.player.lives:
-                heart_ui.show()
-            else:
-                heart_ui.hide()
 
     def update(self, dt):
         self.spawn_timer -= dt
         self.time_elapsed += dt
-        self.player.handle_input(dt)
-        self.updateable.update(dt, self.playable_area)
-        self.player.bullets.update(dt)
-        self.enemies.update(dt)
-        self.ui_manager.update(dt)
         self.check_collisions()
+        self.updatable.update(dt, self.screen_bounds)
+        self.ui_manager.update(dt)
         self.enemy_factory.update(dt, self.time_elapsed)
+        self.powerup_factory.update(dt)
 
-        for enemy in self.enemies:
-            enemy.bullets.update(dt)
-            
+        for x in self.enemies:
+            for bullet in x.bullets:
+                self.updatable.add(bullet)
+                self.drawable.add(bullet)
+                self.enemy_bullets.add(bullet)
+        for x in self.player.bullets:
+            self.updatable.add(x)
+            self.drawable.add(x)
+            self.player_bullets.add(x)
+
+        self.player.check_collision(self.enemies, self.powerups, self.enemy_bullets, self)
 
     def draw(self, screen):
         self.drawable.draw(screen)
-        self.player.bullets.draw(screen)
-        self.enemies.draw(screen)
-        for enemy in self.enemies:
-            enemy.bullets.draw(screen)
-            
-
         self.ui_manager.draw_ui(screen)
 
     def check_collisions(self):
@@ -86,17 +89,6 @@ class GameState(BaseGamestate):
                 if bullet.rect.colliderect(enemy.rect):
                     bullet.kill()
                     self.enemy_hit(enemy)
-        for enemy in self.enemies:
-            for bullet in enemy.bullets:
-                if bullet.rect.colliderect(self.player.rect):
-                    bullet.kill()
-                    self.player.current_health -= 10
-                    self.player_hit(self.player)
-            if enemy.rect.colliderect(self.player.rect):
-                enemy.kill()
-                enemy.health_bar.kill()
-                self.player.current_health -= 75
-                self.player_hit(self.player)
             
     def enemy_hit(self, enemy):
         enemy.current_health -= 50
@@ -110,18 +102,6 @@ class GameState(BaseGamestate):
         self.player.score += enemy.point_value
         self.kill_display.set_text(f"Kills: {self.kill_count}")
         self.score_display.set_text(f"Score: {self.player.score}")
-
-    def player_hit(self, player):
-        if player.current_health <= 0:
-            if  player.lives == 0:
-                self.game_length = self.time_elapsed
-                self.new_state = "game_over"
-                self.transition = True
-            else:
-                player.lives -= 1
-                player.current_health = 100
-                self.lives_display.set_text(f"Lives: ")
-                self.update_hearts()       
 
     def build_ui(self):
         
@@ -161,16 +141,6 @@ class GameState(BaseGamestate):
                                     manager=self.ui_manager,
                                     container=self.player_hud,
                                     anchors={"top": "top", "left": "left"})
-        self.heart_image = pygame.image.load("ui/game_assets/heart.png").convert_alpha()
-        self.heart_image = pygame.transform.scale(self.heart_image, (30, 30))
-        self.hearts = []
-        for i in range(self.player.lives):
-            heart_ui = UIImage(pygame.Rect(55 + i * 20, 2, 30, 30),
-                               self.heart_image,
-                               self.ui_manager,
-                               parent_element=self.lives_display,
-                               anchors={"centery": "centery", "left": "left", "centery_target": self.lives_display})   
-            self.hearts.append(heart_ui)
         
         self.hud_elements = [self.player_hud, self.player_health_bar, self.kill_display]
         
@@ -198,6 +168,7 @@ class GameState(BaseGamestate):
                                         container=self.pause_panel,
                                         object_id="#settings_buttons",
                                         anchors={"bottom": "bottom", "centerx": "centerx"})
+        self.player.update_hearts(self)
         
     def reset(self):
         self.kill_count = 0
@@ -227,8 +198,7 @@ class GameState(BaseGamestate):
             if keys[pygame.K_F12]:
                 settings.DEBUG_MODE = False
             if keys[pygame.K_F9]:
-                enemy = self.enemy_factory.spawn_enemy()
-                self.enemies.add(enemy)
+                return self.powerup_factory.spawn_powerup()
 
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == self.resume_button:

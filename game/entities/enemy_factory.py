@@ -29,18 +29,28 @@ class EnemyFactory():
     def spawn_enemy(self):
         _choice = self.select_enemy()
         if _choice == "WhiteEnemyFighter":
-            return WhiteEnemyFighter(*self.spawn_point(), 100, 100, 200, 2, 100, self.screen_bounds)
+            enemy = WhiteEnemyFighter(*self.spawn_point(), 100, 100, 200, 2, 100)
+            self.game_state.drawable.add(enemy)
+            self.game_state.updatable.add(enemy)
+            self.game_state.enemies.add(enemy)
+            return enemy
         elif _choice == "BlackEnemyFighter":
-            return BlackEnemyFighter(*self.spawn_point(), 200, 150, 500, 3, 250, self.screen_bounds)
+            enemy = BlackEnemyFighter(*self.spawn_point(), 200, 150, 500, 3, 250)
+            self.game_state.drawable.add(enemy)
+            self.game_state.updatable.add(enemy)
+            self.game_state.enemies.add(enemy)
+            return enemy
         elif _choice == "YellowEnemyFighter":
-            return YellowEnemyFighter(*self.spawn_point(), 300, 175, 600, 4, 500, self.screen_bounds)
+            enemy = YellowEnemyFighter(*self.spawn_point(), 300, 175, 600, 4, 500)
+            self.game_state.drawable.add(enemy)
+            self.game_state.updatable.add(enemy)
+            self.game_state.enemies.add(enemy)
+            return enemy
 
     def update(self, dt, game_time):
         self.spawn_timer -= dt
         if self.spawn_timer <= 0:
             self.spawn_timer = 3
             enemy = self.spawn_enemy()
-            self.select_enemy()
-            self.game_state.enemies.add(enemy)
             return enemy
         return None   

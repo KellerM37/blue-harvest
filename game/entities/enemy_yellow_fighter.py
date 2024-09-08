@@ -6,8 +6,8 @@ class YellowEnemyFighter(BaseEnemy):
     _enemy_image = None
     _enemy_rect = None
 
-    def __init__(self, x, y, health_capacity, speed, bullet_speed, shot_delay, point_value, screen_bounds):
-        super().__init__(x, y, health_capacity, speed, bullet_speed, shot_delay, point_value, screen_bounds)
+    def __init__(self, x, y, health_capacity, speed, bullet_speed, shot_delay, point_value):
+        super().__init__(x, y, health_capacity, speed, bullet_speed, shot_delay, point_value)
         self.position = pygame.Vector2(x, y)
         self.velocity = pygame.Vector2(0, 100)
         self.bullets = pygame.sprite.Group()

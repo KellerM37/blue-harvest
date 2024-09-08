@@ -15,9 +15,9 @@ class Bullet(pygame.sprite.Sprite):
 
         self.image, self.rect = self.get_sprite(pygame.image.load("ui/game_assets/missile00.png").convert_alpha())
 
-    def update(self, dt):
+    def update(self, dt, screen_bounds):
         self.rect.y += self.velocity.y * dt
-        if not self.bullet_area.colliderect(self.rect):
+        if self.position.y > screen_bounds.height:
             self.kill()
 
     def draw(self, screen):
