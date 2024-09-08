@@ -14,14 +14,27 @@ class EnemyFactory():
         self.screen_bounds = screen_bounds
         self.spawn_timer = 0
 
+        self.speed_boost = 0
+
+        self.rarity = {
+            "WhiteEnemyFighter": 60,
+            "BlackEnemyFighter": 20,
+            "YellowEnemyFighter": 20
+        }
+
     def spawn_point(self):
         return (random.randint(self.spawn_area.left, self.spawn_area.right), self.spawn_area.top)
+    
+    def add_group(self, enemy):
+        self.game_state.drawable.add(enemy)
+        self.game_state.updatable.add(enemy)
+        self.game_state.enemies.add(enemy)
 
     def select_enemy(self):
-        _number = random.randint(0, 100)
-        if _number < 60:
+        _number = random.randint(0, 99)
+        if _number < self.rarity["WhiteEnemyFighter"]:
             return "WhiteEnemyFighter"
-        elif _number < 80:
+        elif _number < self.rarity["WhiteEnemyFighter"] + self.rarity["BlackEnemyFighter"]:
             return "BlackEnemyFighter"
         else:
             return "YellowEnemyFighter"
@@ -29,22 +42,17 @@ class EnemyFactory():
     def spawn_enemy(self):
         _choice = self.select_enemy()
         if _choice == "WhiteEnemyFighter":
-            enemy = WhiteEnemyFighter(*self.spawn_point(), 100, 100, 200, 2, 100)
-            self.game_state.drawable.add(enemy)
-            self.game_state.updatable.add(enemy)
-            self.game_state.enemies.add(enemy)
+            enemy = WhiteEnemyFighter(*self.spawn_point(), 100, 100 + self.speed_boost, 200, 2, 100)
+            print(f"speed: {enemy.speed}, includes boost: {self.speed_boost}")
+            self.add_group(enemy)
             return enemy
         elif _choice == "BlackEnemyFighter":
-            enemy = BlackEnemyFighter(*self.spawn_point(), 200, 150, 500, 3, 250)
-            self.game_state.drawable.add(enemy)
-            self.game_state.updatable.add(enemy)
-            self.game_state.enemies.add(enemy)
+            enemy = BlackEnemyFighter(*self.spawn_point(), 200, 150 + self.speed_boost, 500, 3, 250)
+            self.add_group(enemy)
             return enemy
         elif _choice == "YellowEnemyFighter":
-            enemy = YellowEnemyFighter(*self.spawn_point(), 300, 175, 600, 4, 500)
-            self.game_state.drawable.add(enemy)
-            self.game_state.updatable.add(enemy)
-            self.game_state.enemies.add(enemy)
+            enemy = YellowEnemyFighter(*self.spawn_point(), 300, 175 + self.speed_boost, 600, 4, 500)
+            self.add_group(enemy)
             return enemy
 
     def update(self, dt, game_time):

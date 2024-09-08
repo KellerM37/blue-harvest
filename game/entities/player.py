@@ -3,10 +3,7 @@ import pygame_gui
 import random
 
 from pygame_gui.elements import UIImage
-
-from game.data.settings import DEBUG_SHOW_PLAYER_HITBOX, SCREEN_WIDTH, SCREEN_HEIGHT
-
-from game.entities.base_entity import BaseEntity
+from game.data.settings import SCREEN_WIDTH, SCREEN_HEIGHT
 from game.entities.bullet import Bullet
 
 class Player(pygame.sprite.Sprite):
@@ -57,6 +54,8 @@ class Player(pygame.sprite.Sprite):
 
     def check_collision(self, enemies, powerups, enemy_bullets, game_state):
         for x in powerups:
+            if x.name == "heart_powerup":
+                pass
             if self.rect.colliderect(x.rect):
                 self.handle_powerup(x, game_state)
         for x in enemy_bullets:

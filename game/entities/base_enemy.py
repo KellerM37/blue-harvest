@@ -22,6 +22,10 @@ class BaseEnemy(pygame.sprite.Sprite):
         self.current_health = health_capacity
         self.point_value = point_value
 
+    def kill(self):
+        self.health_bar.kill()
+        super().kill()
+
     def draw(self, screen):
         screen.blit(self.image, self.rect)
         if self.screen is None:

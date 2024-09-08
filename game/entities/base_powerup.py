@@ -16,9 +16,7 @@ class BasePowerup(pygame.sprite.Sprite):
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
-        print("Drawing powerup")
         if self.position.y > self.screen_bounds.height:
-            print("Killing powerup")
             self.kill()
 
     def apply(self, player):

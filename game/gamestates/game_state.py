@@ -1,15 +1,15 @@
 import pygame
 import pygame_gui
-import random
 
 from .base_state import BaseGamestate
 from game.data import settings
 from saves import *
+from pygame_gui.elements import *
+
 from game.entities.player import Player
-from game.entities.enemy_white_fighter import WhiteEnemyFighter
 from game.entities.enemy_factory import EnemyFactory
 from game.entities.powerup_factory import PowerupFactory
-from pygame_gui.elements import *
+from game.data.aggression_manager import AggressionManager
 
 class GameState(BaseGamestate):
     def __init__(self, ui_manager, state_manager):
@@ -24,16 +24,11 @@ class GameState(BaseGamestate):
         self.screen_bounds = pygame.Rect(0, 0, settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT)
         self.player = Player(player_start[0], player_start[1], self.ui_manager)
 
-        # Factory initializations
-        self.powerup_factory = PowerupFactory(self.screen_bounds, self, self.player)
-        self.enemy_factory = EnemyFactory(self.screen_bounds, self)
 
         # Game timers
-        self.time_elapsed = 0
+        self.elapsed_time = 0
         self.game_length = 0
         self.spawn_timer = 0
-
-        self.kill_count = 0
 
         # Groups for various sprites to be updated and drawn
         self.updatable = pygame.sprite.Group()
@@ -44,6 +39,12 @@ class GameState(BaseGamestate):
         self.player_bullets = pygame.sprite.Group()
 
         self.player.add(self.updatable, self.drawable)
+        self.kill_count = 0
+
+        # Factory initializations
+        self.powerup_factory = PowerupFactory(self.screen_bounds, self, self.player, self.powerups)
+        self.enemy_factory = EnemyFactory(self.screen_bounds, self)
+        self.aggression_manager = AggressionManager(self.elapsed_time, self.ui_manager, self.state_manager, self.enemy_factory, self.powerup_factory)
 
         self.build_ui()
         self.is_paused = False
@@ -60,12 +61,14 @@ class GameState(BaseGamestate):
 
     def update(self, dt):
         self.spawn_timer -= dt
-        self.time_elapsed += dt
+        self.elapsed_time += dt
         self.check_collisions()
         self.updatable.update(dt, self.screen_bounds)
         self.ui_manager.update(dt)
-        self.enemy_factory.update(dt, self.time_elapsed)
+        self.enemy_factory.update(dt, self.elapsed_time)
         self.powerup_factory.update(dt)
+        self.aggression_manager.update(dt, self.elapsed_time)
+
 
         for x in self.enemies:
             for bullet in x.bullets:
@@ -207,7 +210,7 @@ class GameState(BaseGamestate):
                     for x in self.hud_elements:
                         x.show()
                 if event.ui_element == self.quit_button:
-                    self.new_state = "main_menu"
+                    self.new_state = "game_over"
                     self.transition = True
 
         if not self.is_paused:

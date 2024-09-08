@@ -33,7 +33,7 @@ class GameOver(BaseGamestate):
 
         self.name_input = UITextEntryLine(pygame.Rect(SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 + 50, 200, 50),
                                             self.ui_manager,
-                                            initial_text="Hudson") #placeholder_text="Enter your name")
+                                            placeholder_text="Enter your name")
         self.submit_button = UIButton(pygame.Rect(SCREEN_WIDTH // 2 - 75, SCREEN_HEIGHT // 2 + 100, 150, 50),
                                             "Submit",
                                              self.ui_manager)
