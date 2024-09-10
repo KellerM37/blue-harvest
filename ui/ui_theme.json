@@ -15,6 +15,13 @@
 	},
 	"button":
 	{
+		"colours":
+		{
+			"normal_bg": "Black",
+			"normal_text": "White",
+			"normal_border": "White",
+			"hover_bg": "SlateGray"
+		},
 		"misc":
 		{
 			"shape": "rounded_rectangle",
@@ -78,6 +85,54 @@
 		  "enable_title_bar": "0",
 		  "enable_close_button": "0"
 	   }
+	},
+	"#main_menu_title_box":
+	{
+		"colours":
+		{
+			"dark_bg": "#232323",
+			"normal_border": "Black"
+		},
+		"background_image":
+		{
+				
+		},
+		"misc":
+		{
+
+			"border_width": "3"
+		}
+	},
+	"#main_menu_button_box":
+	{
+		"colours":
+		{
+			"dark_bg": "#484848",
+			"normal_border": "Black"
+		},
+		"background_image":
+		{
+				
+		},
+		"misc":
+		{
+			"shape": "rounded_rectangle",
+			"shape_corner_radius": "10",
+			"border_width": "5"
+		}
+	},
+	"#leader_entries":
+	{
+		"colours":
+		{
+			"normal_text": "Green"
+		},
+		"font":
+		{
+			"regular_path": "ui/Ldfcomicsans.ttf",
+			"size": "24",
+			"name": "LDFComicSans"
+		}
 	},
 	"#settings":
 	{

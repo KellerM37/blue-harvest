@@ -1,9 +1,8 @@
 import pygame
 import pygame_gui
 
-from data.settings import *
+from game.data.settings import *
 
-from game.gamestates import gamestate_manager
 from game.gamestates.gamestate_manager import GamestateManager
 
 def main():
@@ -28,8 +27,6 @@ def main():
         dt = clock.tick(60) / 1000
         is_running = gamestate_manager.run(screen, dt)
         pygame.display.flip()
-        if gamestate_manager.active_state.name == "game_state":
-            gamestate_manager.active_state.check_collisions()
     # We've left the loop. Have a good life
     pygame.quit()
 
