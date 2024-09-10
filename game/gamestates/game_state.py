@@ -62,14 +62,18 @@ class GameState(BaseGamestate):
     def update(self, dt):
         self.spawn_timer -= dt
         self.elapsed_time += dt
-        self.check_collisions()
+        
         self.updatable.update(dt, self.screen_bounds)
         self.ui_manager.update(dt)
+        self.add_new_bullets()
+        self.check_collisions()
+        self.player.check_collision(self.enemies, self.powerups, self.enemy_bullets, self)
+
         self.enemy_factory.update(dt, self.elapsed_time)
         self.powerup_factory.update(dt)
         self.aggression_manager.update(dt, self.elapsed_time)
 
-
+    def add_new_bullets(self):
         for x in self.enemies:
             for bullet in x.bullets:
                 self.updatable.add(bullet)
@@ -79,8 +83,6 @@ class GameState(BaseGamestate):
             self.updatable.add(x)
             self.drawable.add(x)
             self.player_bullets.add(x)
-
-        self.player.check_collision(self.enemies, self.powerups, self.enemy_bullets, self)
 
     def draw(self, screen):
         self.drawable.draw(screen)

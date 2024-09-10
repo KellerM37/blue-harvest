@@ -29,7 +29,7 @@ Still so much to do.
 - FIXED Figure out why tf it's lagging. Seriously, I don't even know how I did this (Don't do dumb stuff. Fixed)
 - ADDED Implement scoring system that is not just +10 points per kill
 - ADDED Implement a method for spawning different *types* of enemies
-- Implement powerups
+- ADDED Implement powerups
 - Implement Bosses
 - ADDED Learn and Implement save/load functionality (In the form of a leaderboard)
 - Change leaderboard (needs max size and overwrite)
