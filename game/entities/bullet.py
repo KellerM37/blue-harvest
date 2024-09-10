@@ -9,6 +9,7 @@ class Bullet(pygame.sprite.Sprite):
         self.rotation = rotation
         self.surface.fill((255, 255, 255))
         self.position = pygame.Vector2(x, y)
+        self.speed = 300
         self.velocity = pygame.Vector2(0, -300).rotate(rotation)
         self.bullet_area = bullet_area
         self.radius = 5
@@ -17,7 +18,8 @@ class Bullet(pygame.sprite.Sprite):
 
     def update(self, dt, screen_bounds):
         self.rect.y += self.velocity.y * dt
-        if self.position.y > screen_bounds.height:
+        if (self.rect.right < 0 or self.rect.left > screen_bounds.width or
+            self.rect.bottom < 0 or self.rect.top > screen_bounds.height):
             self.kill()
 
     def draw(self, screen):

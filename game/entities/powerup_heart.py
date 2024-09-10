@@ -13,6 +13,9 @@ class HeartPowerup(BasePowerup):
     def update(self, dt, screen_bounds):
         self.position.y += self.speed * dt
         self.rect.y = self.position.y
+        if self.position.y > screen_bounds.height:
+            print("Powerup missed")
+            self.kill()
 
     def apply(self, player):
         player.lives += 1

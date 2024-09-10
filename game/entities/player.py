@@ -5,12 +5,14 @@ import random
 from pygame_gui.elements import UIImage
 from game.data.settings import SCREEN_WIDTH, SCREEN_HEIGHT
 from game.entities.bullet import Bullet
+from game.entities.powerup_bomb import *
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, ui_manager):
+    def __init__(self, x, y, ui_manager, game_state):
         super().__init__()
         self.position = pygame.Vector2(x, y)
         self.ui_manager = ui_manager
+        self.game_state = game_state
         
         self.bullets = pygame.sprite.Group()
         self.image, self.rect = self.get_sprite(pygame.image.load("ui/game_assets/FighterPlaneV2.png").convert_alpha())
@@ -31,6 +33,9 @@ class Player(pygame.sprite.Sprite):
         
         self.powerup_timer = 0
         self.boost = 0
+        self.bombs = 1
+        self.bomb_timer = 0
+        self.bombs_ui = []
         self.has_powerup = False
 
     def get_sprite(self, image):
@@ -75,7 +80,7 @@ class Player(pygame.sprite.Sprite):
             bullet.velocity = pygame.Vector2(0, self.bullet_speed)
             self.bullets.add(bullet)
             self.shot_timer = 0.3
-            
+    
     def player_hit(self, game_state):
         if self.current_health <= 0:
             if  self.lives == 0:
@@ -85,7 +90,8 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.lives -= 1
                 self.current_health = 100
-                self.update_hearts(game_state) 
+                self.update_hearts(game_state)
+        self.current_health = self.health_capacity
 
     def update_hearts(self, game_state):
         self.heart_image = pygame.image.load("ui/game_assets/heart.png").convert_alpha()
@@ -106,15 +112,36 @@ class Player(pygame.sprite.Sprite):
             else:
                 heart_ui.hide()
 
+    def update_bombs(self, game_state):
+        self.bomb_image = pygame.image.load("ui/game_assets/bomb64.png").convert_alpha()
+        self.bomb_image = pygame.transform.scale(self.bomb_image, (22, 22))
+        for bomb_ui in self.bombs_ui:
+            bomb_ui.kill()
+        self.bombs_ui.clear()
+        for i in range(self.bombs):
+            bomb_ui = UIImage(pygame.Rect(i * 25, -5, 30, 30),
+                               self.bomb_image,
+                               self.ui_manager,
+                               parent_element=game_state.bomb_display,
+                               anchors={"centery": "centery", "left": "left", "centery_target": game_state.bomb_display, "left_target": game_state.bomb_display})   
+            self.bombs_ui.append(bomb_ui)
+        for i, bomb_ui in enumerate(self.bombs_ui):
+            if i < self.bombs:
+                bomb_ui.show()
+            else:
+                bomb_ui.hide()
+
     def handle_powerup(self, powerup, game_state):
         if powerup.name == "speed_powerup":
             self.speed_bool = True
             self.boost = powerup.apply(self)
-            powerup.kill()
         elif powerup.name == "heart_powerup":
             powerup.apply(self)
             self.update_hearts(game_state)
-            powerup.kill()
+        elif powerup.name == "bomb_powerup":
+            powerup.apply(self)
+            self.update_bombs(game_state)
+        powerup.kill()
 
     def kill_boost(self):
         if self.speed_bool == True:
@@ -132,12 +159,18 @@ class Player(pygame.sprite.Sprite):
             self.move_hor(dt, -1)
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             self.move_hor(dt, 1)
+        if keys[pygame.K_b] and self.bombs > 0:
+            if self.bomb_timer <= 0:
+                self.bomb_timer = 1
+                self.bombs -= 1
+                self.game_state.detonate_bomb()
         if keys[pygame.K_SPACE] and self.shot_timer <= 0:
             self.shoot()
 
     def update(self, dt, screen_bounds):
         self.shot_timer -= dt
         self.powerup_timer -= dt
+        self.bomb_timer -= dt
 
         if self.powerup_timer <= 0:
             self.kill_boost()

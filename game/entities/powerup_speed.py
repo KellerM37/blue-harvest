@@ -13,10 +13,13 @@ class SpeedPowerup(BasePowerup):
     def update(self, dt, screen_bounds):
         self.position.y += self.speed * dt
         self.rect.y = self.position.y
+        if self.position.y > screen_bounds.height:
+            print("Powerup missed")
+            self.kill()
 
     def apply(self, player):
-        boost = 150
+        boost = 200
         player._player_speed += boost
         player.has_powerup = True
-        player.powerup_timer = 5
+        player.powerup_timer = 30
         return boost

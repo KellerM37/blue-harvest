@@ -43,7 +43,6 @@ class EnemyFactory():
         _choice = self.select_enemy()
         if _choice == "WhiteEnemyFighter":
             enemy = WhiteEnemyFighter(*self.spawn_point(), 100, 100 + self.speed_boost, 200, 2, 100)
-            print(f"speed: {enemy.speed}, includes boost: {self.speed_boost}")
             self.add_group(enemy)
             return enemy
         elif _choice == "BlackEnemyFighter":
