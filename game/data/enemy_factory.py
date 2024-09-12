@@ -2,9 +2,7 @@ import pygame
 import random
 from game.data import settings
 
-from game.entities.enemy_white_fighter import WhiteEnemyFighter
-from game.entities.enemy_black_fighter import BlackEnemyFighter
-from game.entities.enemy_yellow_fighter import YellowEnemyFighter
+from game.entities.enemy_fighters import WhiteEnemyFighter, BlackEnemyFighter, YellowEnemyFighter
 
 class EnemyFactory():
     def __init__(self, screen_bounds, game_state):
@@ -17,9 +15,9 @@ class EnemyFactory():
         self.speed_boost = 0
 
         self.rarity = {
-            "WhiteEnemyFighter": 60,
+            "WhiteEnemyFighter": 75,
             "BlackEnemyFighter": 20,
-            "YellowEnemyFighter": 20
+            "YellowEnemyFighter": 5
         }
 
     def spawn_point(self):
@@ -42,15 +40,15 @@ class EnemyFactory():
     def spawn_enemy(self):
         _choice = self.select_enemy()
         if _choice == "WhiteEnemyFighter":
-            enemy = WhiteEnemyFighter(*self.spawn_point(), 100, 100 + self.speed_boost, 200, 2, 100)
+            enemy = WhiteEnemyFighter(*self.spawn_point())
             self.add_group(enemy)
             return enemy
         elif _choice == "BlackEnemyFighter":
-            enemy = BlackEnemyFighter(*self.spawn_point(), 200, 150 + self.speed_boost, 500, 3, 250)
+            enemy = BlackEnemyFighter(*self.spawn_point())
             self.add_group(enemy)
             return enemy
         elif _choice == "YellowEnemyFighter":
-            enemy = YellowEnemyFighter(*self.spawn_point(), 300, 175 + self.speed_boost, 600, 4, 500)
+            enemy = YellowEnemyFighter(*self.spawn_point())
             self.add_group(enemy)
             return enemy
 

@@ -1,7 +1,6 @@
 import pygame
 import pygame_gui
 
-from game.entities.powerup_bomb import BombPowerup
 
 from .base_state import BaseGamestate
 from game.data import settings
@@ -9,10 +8,11 @@ from saves import *
 from pygame_gui.elements import *
 
 from game.entities.player import Player
-from game.entities.enemy_factory import EnemyFactory
-from game.entities.powerup_factory import PowerupFactory
+from game.data.enemy_factory import EnemyFactory
+from game.data.powerup_factory import PowerupFactory
+from game.entities.powerups import BombExplosion
 from game.data.aggression_manager import AggressionManager
-from game.entities.powerup_bomb import BombExplosion
+from game.data.collision_manager import CollisionManager
 
 class GameState(BaseGamestate):
     def __init__(self, ui_manager, state_manager):
@@ -50,6 +50,7 @@ class GameState(BaseGamestate):
         self.enemy_factory = EnemyFactory(self.screen_bounds, self)
         self.aggression_manager = AggressionManager(self.elapsed_time, self.ui_manager, self.state_manager, self.enemy_factory, self.powerup_factory)
 
+        self.collision_manager = CollisionManager(self, self.player, self.enemies, self.powerups)
         self.build_ui()
         self.is_paused = False
 
@@ -72,8 +73,7 @@ class GameState(BaseGamestate):
         self.add_new_bullets()
         self.player.bullets.update(dt, self.screen_bounds)
         self.enemy_bullets.update(dt, self.screen_bounds)
-        self.check_collisions()
-        self.player.check_collision(self.enemies, self.powerups, self.enemy_bullets, self)
+        self.collision_manager.check_collisions()
 
         self.enemy_factory.update(dt, self.elapsed_time)
         self.powerup_factory.update(dt)
@@ -91,7 +91,7 @@ class GameState(BaseGamestate):
             self.player_bullets.add(x)
 
     def detonate_bomb(self):
-        self.explosion = BombExplosion(self.player.position, 10, self.enemies)
+        self.explosion = BombExplosion(self.player.position, 10, self.enemies, self.player)
         self.explosion.add(self.updatable)
         self.player.update_bombs(self)
             
@@ -102,26 +102,6 @@ class GameState(BaseGamestate):
             self.explosion.draw(screen)
             if self.explosion.is_finished:
                 self.explosion = None
-
-    def check_collisions(self):
-        for bullet in self.player.bullets:
-            for enemy in self.enemies:
-                if bullet.rect.colliderect(enemy.rect):
-                    bullet.kill()
-                    self.enemy_hit(enemy)
-            
-    def enemy_hit(self, enemy):
-        enemy.current_health -= 50
-        if enemy.current_health <= 0:
-            self.enemy_killed(enemy)
-
-    def enemy_killed(self, enemy):
-        enemy.health_bar.kill()
-        enemy.kill()
-        self.kill_count += 1
-        self.player.score += enemy.point_value
-        self.kill_display.set_text(f"Kills: {self.kill_count}")
-        self.score_display.set_text(f"Score: {self.player.score}")
 
     def build_ui(self):
         

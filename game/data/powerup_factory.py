@@ -1,10 +1,7 @@
 import pygame
 import random
 from game.data.settings import SCREEN_HEIGHT, SCREEN_WIDTH
-
-from game.entities.powerup_bomb import BombPowerup
-from game.entities.powerup_heart import HeartPowerup
-from game.entities.powerup_speed import SpeedPowerup
+from game.entities.powerups import BombPowerup, HeartPowerup, SpeedPowerup
 
 class PowerupFactory():
     def __init__(self, screen_bounds, game_state, player, powerups):
@@ -17,9 +14,9 @@ class PowerupFactory():
         self.spawn_timer = 0
         self.spawnable_heart = False
         self.spawnable_bomb = False
-        self.heart_timer = 2
-        self.speed_timer = 2
-        self.bomb_timer = 2
+        self.heart_timer = 120
+        self.speed_timer = 100
+        self.bomb_timer = 1
 
     def spawn_point(self):
         return (random.randint(self.spawn_area.left, self.spawn_area.right), self.spawn_area.top)
@@ -60,7 +57,7 @@ class PowerupFactory():
             self.add_group(_spawn)
             return _spawn
         elif self.speed_timer <= 0:
-            self.speed_timer = 60
+            self.speed_timer = 100
             _spawn = SpeedPowerup(*self.spawn_point(), self.screen_bounds)
             self.add_group(_spawn)
             return _spawn        

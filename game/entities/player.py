@@ -5,7 +5,6 @@ import random
 from pygame_gui.elements import UIImage
 from game.data.settings import SCREEN_WIDTH, SCREEN_HEIGHT
 from game.entities.bullet import Bullet
-from game.entities.powerup_bomb import *
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, ui_manager, game_state):
@@ -24,14 +23,14 @@ class Player(pygame.sprite.Sprite):
         self.lives = 3
         self.hearts = []
         self.score = 0
-        self._player_speed = 300
+        self.player_speed = 300
         self.current_health = 100
         self.health_capacity = 100
 
         self.shot_timer = 0
         self.bullet_speed = -700
         
-        self.powerup_timer = 0
+        self.boost_timer = 0
         self.boost = 0
         self.bombs = 1
         self.bomb_timer = 0
@@ -50,38 +49,29 @@ class Player(pygame.sprite.Sprite):
         self.bullets.draw(screen)
 
     def move_vert(self, dt, direction):
-        self.position.y += direction * self._player_speed * dt
+        self.position.y += direction * self.player_speed * dt
         self.rect.y = self.position.y
 
     def move_hor(self, dt, direction):
-        self.position.x += direction * self._player_speed * dt
+        self.position.x += direction * self.player_speed * dt
         self.rect.x = self.position.x
-
-    def check_collision(self, enemies, powerups, enemy_bullets, game_state):
-        for x in powerups:
-            if x.name == "heart_powerup":
-                pass
-            if self.rect.colliderect(x.rect):
-                self.handle_powerup(x, game_state)
-        for x in enemy_bullets:
-            if self.rect.colliderect(x.rect):
-                x.kill()
-                self.current_health -= 10
-                self.player_hit(game_state)
-        for x in enemies:
-            if self.rect.colliderect(x.rect):
-                x.kill()
-                self.current_health -= 50
-                self.player_hit(game_state)
-
+                
     def shoot(self):
         if self.shot_timer <= 0:
-            bullet = Bullet(self.position.x, self.position.y, pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT))
+            bullet = Bullet(self.position.x, self.position.y, pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT), 0, 50)
             bullet.velocity = pygame.Vector2(0, self.bullet_speed)
             self.bullets.add(bullet)
             self.shot_timer = 0.3
     
-    def player_hit(self, game_state):
+    def hit_by_bullet(self, damage):
+        self.current_health -= damage
+        self.check_alive(self.game_state)
+    
+    def hit_enemy_ship(self):
+        self.current_health -= 50
+        self.check_alive(self.game_state)
+
+    def check_alive(self, game_state):
         if self.current_health <= 0:
             if  self.lives == 0:
                 game_state.game_length = game_state.time_elapsed
@@ -89,9 +79,8 @@ class Player(pygame.sprite.Sprite):
                 game_state.transition = True
             else:
                 self.lives -= 1
-                self.current_health = 100
+                self.current_health += self.health_capacity
                 self.update_hearts(game_state)
-        self.current_health = self.health_capacity
 
     def update_hearts(self, game_state):
         self.heart_image = pygame.image.load("ui/game_assets/heart.png").convert_alpha()
@@ -131,22 +120,11 @@ class Player(pygame.sprite.Sprite):
             else:
                 bomb_ui.hide()
 
-    def handle_powerup(self, powerup, game_state):
-        if powerup.name == "speed_powerup":
-            self.speed_bool = True
-            self.boost = powerup.apply(self)
-        elif powerup.name == "heart_powerup":
-            powerup.apply(self)
-            self.update_hearts(game_state)
-        elif powerup.name == "bomb_powerup":
-            powerup.apply(self)
-            self.update_bombs(game_state)
-        powerup.kill()
-
     def kill_boost(self):
         if self.speed_bool == True:
+            print("Speed powerup removed")
             self.speed_bool = False
-            self._player_speed -= self.boost
+            self.player_speed -= self.boost
             self.boost = 0
 
     def handle_input(self, dt):
@@ -169,12 +147,12 @@ class Player(pygame.sprite.Sprite):
 
     def update(self, dt, screen_bounds):
         self.shot_timer -= dt
-        self.powerup_timer -= dt
+        self.boost_timer -= dt
         self.bomb_timer -= dt
 
-        if self.powerup_timer <= 0:
+        if self.boost_timer <= 0:
             self.kill_boost()
-            self.powerup_timer = 0
+            self.boost_timer = 0
 
         self.handle_input(dt)
         self.bullets.update(dt, self.screen_bounds)

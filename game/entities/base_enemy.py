@@ -57,6 +57,19 @@ class BaseEnemy(pygame.sprite.Sprite):
                                                  self,
                                                  anchors={"top": "top", "centery": "centery", "centery_target": self.rect},
                                                  visible=False)
+        
+    def enemy_damaged(self, enemy, game_state, damage):
+        enemy.current_health -= damage
+        if enemy.current_health <= 0:
+            self.enemy_killed(enemy, game_state)
+
+    def enemy_killed(self, enemy, game_state):
+        self.health_bar.kill()
+        self.kill()
+        game_state.kill_count += 1
+        game_state.player.score += self.point_value
+        game_state.kill_display.set_text(f"Kills: {game_state.kill_count}")
+        game_state.score_display.set_text(f"Score: {game_state.player.score}")
 
     def get_sprite(self, image):
         pass

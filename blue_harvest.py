@@ -3,7 +3,7 @@ import pygame_gui
 
 from game.data.settings import *
 
-from game.gamestates.gamestate_manager import GamestateManager
+from game.data.gamestate_manager import GamestateManager
 
 def main():
     # Initializing pygame, window, delta_time, and UI master

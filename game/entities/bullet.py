@@ -3,7 +3,7 @@ import pygame
 from game.data import settings
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, x, y, bullet_area, rotation=0):
+    def __init__(self, x, y, bullet_area, rotation=0, damage=10):
         super().__init__()
         self.surface = pygame.Surface((10, 10))
         self.rotation = rotation
@@ -13,6 +13,7 @@ class Bullet(pygame.sprite.Sprite):
         self.velocity = pygame.Vector2(0, -300).rotate(rotation)
         self.bullet_area = bullet_area
         self.radius = 5
+        self.damage = damage
 
         self.image, self.rect = self.get_sprite(pygame.image.load("ui/game_assets/missile00.png").convert_alpha())
 
