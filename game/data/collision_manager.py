@@ -19,8 +19,6 @@ class CollisionManager():
         for enemy in self.enemies:
             if self.player.rect.colliderect(enemy.rect):
                 self.player.hit_enemy_ship()
-                self.player.score += enemy.point_value
-                self.game_state.score_display.set_text(f"Score: {self.player.score}")
                 enemy.kill()
     
     def check_player_powerup_collisions(self):
@@ -41,6 +39,10 @@ class CollisionManager():
                 if self.player.rect.colliderect(bullet.rect):
                     self.player.hit_by_bullet(bullet.damage)
                     bullet.kill()
+        for bullet in self.game_state.enemy_bullets:
+            if self.player.rect.colliderect(bullet.rect):
+                self.player.hit_by_bullet(bullet.damage)
+                bullet.kill()
 
     def process_powerup(self, powerup):
         if powerup.name == "speed_powerup":

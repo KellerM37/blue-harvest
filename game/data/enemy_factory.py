@@ -10,9 +10,11 @@ class EnemyFactory():
         self.enemy_types = ["WhiteEnemyFighter", "BlackEnemyFighter", "YellowEnemyFighter"]
         self.spawn_area = pygame.Rect(0, settings.SCREEN_HEIGHT * -0.1, settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT * 0.1)
         self.screen_bounds = screen_bounds
-        self.spawn_timer = 0
+        self.spawn_timer = 3
+        self.wave = 0
 
         self.speed_boost = 0
+        self.spawn_rate = 3
 
         self.rarity = {
             "WhiteEnemyFighter": 75,
@@ -51,11 +53,17 @@ class EnemyFactory():
             enemy = YellowEnemyFighter(*self.spawn_point())
             self.add_group(enemy)
             return enemy
+        
+    def spawn_wave(self):
+        for _ in range(15):
+            enemy = self.spawn_enemy()
+        return enemy
 
     def update(self, dt, game_time):
         self.spawn_timer -= dt
         if self.spawn_timer <= 0:
-            self.spawn_timer = 3
+            self.spawn_timer = self.spawn_rate
             enemy = self.spawn_enemy()
             return enemy
-        return None   
+        return None  
+

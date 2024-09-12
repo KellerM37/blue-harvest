@@ -42,7 +42,7 @@ class SpeedPowerup(BasePowerup):
     def apply(self, player):
         print("Speed powerup applied")
         player.player_speed += self.boost
-        player.boost_timer = 3
+        player.boost_timer = 30
         player.has_powerup = True
 
 
@@ -92,7 +92,7 @@ class BombExplosion(pygame.sprite.Sprite):
         self.player = player
         self.radius = radius
         self.enemies = enemies
-        self.expansion_rate = 750
+        self.expansion_rate = 1000
         self.is_finished = False
     
     def update(self, dt, screen_bounds):
@@ -104,7 +104,6 @@ class BombExplosion(pygame.sprite.Sprite):
             if (self.position.distance_to(enemy.position) < self.radius - 15):
                 self.player.score += enemy.point_value
                 self.player.game_state.score_display.set_text(f"Score: {self.player.score}")
-                print(f"adding {enemy.point_value} to score")
                 enemy.kill()
     
     def draw(self, screen):

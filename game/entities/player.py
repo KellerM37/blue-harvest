@@ -14,7 +14,7 @@ class Player(pygame.sprite.Sprite):
         self.game_state = game_state
         
         self.bullets = pygame.sprite.Group()
-        self.image, self.rect = self.get_sprite(pygame.image.load("ui/game_assets/FighterPlaneV2.png").convert_alpha())
+        self.image, self.rect = self.get_sprite(pygame.image.load("ui/game_assets/Ships maybe/destroyer.png").convert_alpha())
         self.rect.center = self.position
         self.heart_bool, self.speed_bool, self.weapon_bool = False, False, False
         self.screen_bounds = pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -23,7 +23,7 @@ class Player(pygame.sprite.Sprite):
         self.lives = 3
         self.hearts = []
         self.score = 0
-        self.player_speed = 300
+        self.player_speed = 400
         self.current_health = 100
         self.health_capacity = 100
 
@@ -38,9 +38,8 @@ class Player(pygame.sprite.Sprite):
         self.has_powerup = False
 
     def get_sprite(self, image):
-        ship_selection = pygame.Rect(1064, 1800, 1000, 900)
-        ship_sprite = image.subsurface(ship_selection)
-        ship_sprite = pygame.transform.scale(ship_sprite, (100, 100))
+        ship_sprite = pygame.transform.scale(image, (100, 95))
+        ship_sprite = pygame.transform.rotate(ship_sprite, 90)
         ship_rect = ship_sprite.get_rect(center=self.position)
         return ship_sprite, ship_rect 
        
@@ -74,7 +73,7 @@ class Player(pygame.sprite.Sprite):
     def check_alive(self, game_state):
         if self.current_health <= 0:
             if  self.lives == 0:
-                game_state.game_length = game_state.time_elapsed
+                game_state.game_length = game_state.elapsed_time
                 game_state.new_state = "game_over"
                 game_state.transition = True
             else:

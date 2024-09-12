@@ -1,4 +1,5 @@
 import pygame
+import random
 from pygame_gui.elements import *
 
 from game.data.settings import SCREEN_WIDTH, SCREEN_HEIGHT
@@ -49,7 +50,7 @@ class BaseEnemy(pygame.sprite.Sprite):
         bullet = Bullet(self.position.x, self.position.y + 50, pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT), rotation=180)
         bullet.velocity = pygame.Vector2(0, self.bullet_speed)
         self.bullets.add(bullet)
-        self.shot_timer = self.shot_delay
+        self.shot_timer = random.uniform(self.shot_delay - 0.5, self.shot_delay + 0.5)
 
     def draw_health_bar(self):
         self.health_bar = UIScreenSpaceHealthBar(pygame.Rect(0, 0, 100, 10),
@@ -65,6 +66,7 @@ class BaseEnemy(pygame.sprite.Sprite):
 
     def enemy_killed(self, enemy, game_state):
         self.health_bar.kill()
+        self.bullets.empty()
         self.kill()
         game_state.kill_count += 1
         game_state.player.score += self.point_value

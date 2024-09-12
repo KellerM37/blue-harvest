@@ -33,3 +33,6 @@ Still so much to do.
 - Implement Bosses
 - ADDED Learn and Implement save/load functionality (In the form of a leaderboard)
 - Change leaderboard (needs max size and overwrite)
+
+## License stuff
+There are files created by MillionthVector@http://millionthvector.blogspot.de in the assets folder
