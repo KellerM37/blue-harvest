@@ -14,6 +14,7 @@ class Player(pygame.sprite.Sprite):
         self.game_state = game_state
         
         self.bullets = pygame.sprite.Group()
+        self._allies = pygame.sprite.Group()
         self.image, self.rect = self.get_sprite(pygame.image.load("ui/game_assets/Ships maybe/destroyer.png").convert_alpha())
         self.rect.center = self.position
         self.heart_bool, self.speed_bool, self.weapon_bool = False, False, False
@@ -36,6 +37,7 @@ class Player(pygame.sprite.Sprite):
         self.bomb_timer = 0
         self.bombs_ui = []
         self.has_powerup = False
+        self.allies = []
 
     def get_sprite(self, image):
         ship_sprite = pygame.transform.scale(image, (100, 95))
@@ -43,7 +45,7 @@ class Player(pygame.sprite.Sprite):
         ship_rect = ship_sprite.get_rect(center=self.position)
         return ship_sprite, ship_rect 
        
-    def draw(self, screen):        
+    def draw(self, screen):   
         screen.blit(self.image, self.rect)
         self.bullets.draw(screen)
 
@@ -61,6 +63,8 @@ class Player(pygame.sprite.Sprite):
             bullet.velocity = pygame.Vector2(0, self.bullet_speed)
             self.bullets.add(bullet)
             self.shot_timer = 0.3
+            for ally in self.allies:
+                ally.shoot()
     
     def hit_by_bullet(self, damage):
         self.current_health -= damage
@@ -142,6 +146,8 @@ class Player(pygame.sprite.Sprite):
                 self.bombs -= 1
                 self.game_state.detonate_bomb()
         if keys[pygame.K_SPACE] and self.shot_timer <= 0:
+            for ally in self._allies:
+                ally.shoot()
             self.shoot()
 
     def update(self, dt, screen_bounds):
@@ -152,9 +158,39 @@ class Player(pygame.sprite.Sprite):
         if self.boost_timer <= 0:
             self.kill_boost()
             self.boost_timer = 0
-
+        
+        self._allies.update(dt, self)
         self.handle_input(dt)
         self.bullets.update(dt, self.screen_bounds)
         self.position.x = max(self.playable_area.left, min(self.position.x, self.playable_area.right))
         self.position.y = max(self.playable_area.top, min(self.position.y, self.playable_area.bottom))
+        self.rect.center = self.position
+
+
+class Wingman(pygame.sprite.Sprite):
+    def __init__(self, x, y, player, game_state, offset):
+        super().__init__()
+        self.position = pygame.Vector2(x, y)
+        self.player = player
+        self.game_state = game_state
+        self.image = pygame.image.load("ui/game_assets/Ships maybe/destroyer.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (60, 50))
+        self.image = pygame.transform.rotate(self.image, 90)
+        self.rect = self.image.get_rect(center=self.position)
+        self.rotation = -90
+        self.bullet_speed = -700
+        self.health = 50
+        self.x_offset = offset
+
+    def shoot(self):
+        bullet = Bullet(self.position.x, self.position.y, pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT), 0, 50)
+        bullet.velocity = pygame.Vector2(0, self.bullet_speed)
+        self.player.bullets.add(bullet)
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+
+    def update(self, dt, player):
+        self.position.x = player.position.x + self.x_offset
+        self.position.y = player.position.y + 60
         self.rect.center = self.position

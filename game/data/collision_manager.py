@@ -1,6 +1,7 @@
 import pygame
 
 from game.data.settings import *
+from game.entities.player import Wingman
 
 class CollisionManager():
     def __init__(self, game_state, player, enemies, powerups):
@@ -55,4 +56,13 @@ class CollisionManager():
         elif powerup.name == "bomb_powerup":
             powerup.apply(self.player)
             self.player.update_bombs(self.game_state)
+        elif powerup.name == "wingman_powerup":
+            _left_ally_position = pygame.Vector2(self.player.position.x - 50, self.player.position.y + 50)
+            _right_ally_position = pygame.Vector2(self.player.position.x + 50, self.player.position.y + 50)
+            if len(self.player._allies) == 0:
+                _ally = Wingman(_left_ally_position[0], _left_ally_position[1], self.player, self.game_state, -60)
+                _ally.add(self.player._allies, self.game_state.drawable)
+            elif len(self.player._allies) == 1:
+                _ally = Wingman(_right_ally_position[0], _right_ally_position[1], self.player, self.game_state, 60)
+                _ally.add(self.player._allies, self.game_state.drawable)
         powerup.kill()

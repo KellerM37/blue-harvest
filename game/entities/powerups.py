@@ -1,5 +1,7 @@
 import pygame
 
+from game.entities.player import Wingman
+
 class BasePowerup(pygame.sprite.Sprite):
     def __init__(self, x, y, image, name):
         super().__init__()
@@ -108,3 +110,29 @@ class BombExplosion(pygame.sprite.Sprite):
     
     def draw(self, screen):
         pygame.draw.circle(screen, (255, 0, 0), (int(self.position.x), int(self.position.y)), int(self.radius), 1)
+
+
+class WingmanPowerup(BasePowerup):
+    def __init__(self, x, y, screen_bounds):
+        super().__init__(x, y, pygame.image.load("ui/game_assets/Ships maybe/cruiser.png").convert_alpha(), "wingman_powerup")
+        self.screen_bounds = screen_bounds
+        self.rotation = -90
+        self.position = pygame.math.Vector2(x, y)
+        self.image = pygame.transform.scale(self.image, (75, 50))
+        self.image = pygame.transform.rotate(self.image, self.rotation)
+        self.rect = self.image.get_rect(center=self.position)
+        self.speed = 130
+
+    def update(self, dt, screen_bounds):
+        self.position.y += self.speed * dt
+        self.rect.y = self.position.y
+        if self.position.y > screen_bounds.height:
+            self.kill()
+
+    def apply(self, player):
+        if player.allies.__len__() < 1:
+            ally = Wingman(player.position.x - 50, player.position.y, player, player.game_state)
+            player._allies.add(ally)
+            player.allies.append(ally)
+            return ally
+        self.kill()

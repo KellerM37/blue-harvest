@@ -1,7 +1,7 @@
 import pygame
 import random
 from game.data.settings import SCREEN_HEIGHT, SCREEN_WIDTH
-from game.entities.powerups import BombPowerup, HeartPowerup, SpeedPowerup
+from game.entities.powerups import BombPowerup, HeartPowerup, SpeedPowerup, WingmanPowerup
 
 class PowerupFactory():
     def __init__(self, screen_bounds, game_state, player, powerups):
@@ -16,6 +16,7 @@ class PowerupFactory():
         self.spawnable_bomb = False
         self.heart_timer = 120
         self.speed_timer = 100
+        self.ally_timer = 1
         self.bomb_timer = 1
 
     def spawn_point(self):
@@ -31,6 +32,7 @@ class PowerupFactory():
         self.heart_timer -= dt
         self.speed_timer -= dt
         self.bomb_timer -= dt
+        self.ally_timer -= dt
 
         heart_powerup_exists = any(x.name == "heart_powerup" for x in self.existing_powerups)
         if self.player.lives < 3 and not heart_powerup_exists:
@@ -44,6 +46,11 @@ class PowerupFactory():
         else:
             self.spawnable_bomb = False
 
+        if self.ally_timer <= 0 and len(self.player._allies) < 2:
+            self.ally_timer = 45
+            _spawn = WingmanPowerup(*self.spawn_point(), self.screen_bounds)
+            self.add_group(_spawn)
+            return _spawn
         if self.heart_timer <= 0 and self.spawnable_heart:
             self.heart_timer = 120
             _spawn = HeartPowerup(*self.spawn_point(), self.screen_bounds)
