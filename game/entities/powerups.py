@@ -94,7 +94,8 @@ class BombExplosion(pygame.sprite.Sprite):
         self.player = player
         self.radius = radius
         self.enemies = enemies
-        self.expansion_rate = 1000
+        self.damage = 300
+        self.expansion_rate = 1750
         self.is_finished = False
     
     def update(self, dt, screen_bounds):
@@ -103,10 +104,9 @@ class BombExplosion(pygame.sprite.Sprite):
             self.is_finished = True
             self.kill()
         for enemy in self.enemies:
-            if (self.position.distance_to(enemy.position) < self.radius - 15):
-                self.player.score += enemy.point_value
-                self.player.game_state.score_display.set_text(f"Score: {self.player.score}")
-                enemy.kill()
+            if (self.position.distance_to(enemy.position) < self.radius - 50) and enemy.bomb_immunity <= 0:
+                enemy.enemy_damaged(enemy, self.player.game_state, self.damage)
+                enemy.bomb_immunity = 1
     
     def draw(self, screen):
         pygame.draw.circle(screen, (255, 0, 0), (int(self.position.x), int(self.position.y)), int(self.radius), 1)
@@ -114,7 +114,7 @@ class BombExplosion(pygame.sprite.Sprite):
 
 class WingmanPowerup(BasePowerup):
     def __init__(self, x, y, screen_bounds):
-        super().__init__(x, y, pygame.image.load("ui/game_assets/Ships maybe/cruiser.png").convert_alpha(), "wingman_powerup")
+        super().__init__(x, y, pygame.image.load("ui/game_assets/Ships maybe/destroyer.png").convert_alpha(), "wingman_powerup")
         self.screen_bounds = screen_bounds
         self.rotation = -90
         self.position = pygame.math.Vector2(x, y)

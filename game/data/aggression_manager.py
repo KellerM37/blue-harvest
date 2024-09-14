@@ -29,10 +29,13 @@ class AggressionManager():
         if current_time % 600 == 0 and current_time != self.last_checked_time:
             self.state_manager.states["game_state"].new_state = "game_over"
             self.state_manager.states["game_state"].transition = True
+        if current_time % 60 == 0 and current_time != self.last_checked_time:
+            self.last_checked_time = current_time
+            self.enemy_factory.spawn_boss()
         if current_time % 40 == 0 and current_time != self.last_checked_time:
-            self.enemy_factory.spawn_wave()
             self.last_checked_time = current_time
             self.enemy_factory.wave += 1
+            self.enemy_factory.spawn_wave()
         if current_time % 15 == 0 and current_time != self.last_checked_time:
             self.last_checked_time = current_time
             self.increase_aggression()

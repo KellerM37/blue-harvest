@@ -56,6 +56,8 @@ class GameOver(BaseGamestate):
         self.name_input.kill()
         self.submit_button.kill()
         self.score_display.kill()
+        if self.is_hi_score:
+            self.hi_score_label.kill()
 
     def update(self, dt):
         self.ui_manager.update(dt)
