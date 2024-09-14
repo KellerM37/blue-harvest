@@ -26,7 +26,7 @@ class GameState(BaseGamestate):
         player_start = (settings.SCREEN_WIDTH // 2, settings.SCREEN_HEIGHT * 0.9)
         self.screen_bounds = pygame.Rect(0, 0, settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT)
         self.player = Player(player_start[0], player_start[1], self.ui_manager, self)
-
+        self.screen = None
 
         # Game timers
         self.elapsed_time = 0
@@ -49,8 +49,8 @@ class GameState(BaseGamestate):
         self.powerup_factory = PowerupFactory(self.screen_bounds, self, self.player, self.powerups)
         self.enemy_factory = EnemyFactory(self.screen_bounds, self)
         self.aggression_manager = AggressionManager(self.elapsed_time, self.ui_manager, self.state_manager, self.enemy_factory, self.powerup_factory)
+        self.collision_manager = CollisionManager(self, self.player, self.enemies, self.powerups, self.screen)
 
-        self.collision_manager = CollisionManager(self, self.player, self.enemies, self.powerups)
         self.build_ui()
         self.is_paused = False
 
@@ -78,6 +78,10 @@ class GameState(BaseGamestate):
         self.enemy_factory.update(dt, self.elapsed_time)
         self.powerup_factory.update(dt)
         self.aggression_manager.update(dt, self.elapsed_time)
+
+        # Debug prints
+        #print(self.player.ally)
+        #print(f"Ally left: {self.player.ally['left']}, ally right: {self.player.ally['right']}")
 
     def add_new_bullets(self):
         for x in self.enemies:
@@ -175,6 +179,7 @@ class GameState(BaseGamestate):
         self.kill_count = 0
     
     def run(self, screen, dt):
+        self.screen = screen
 
         # Event loops
         for event in pygame.event.get():

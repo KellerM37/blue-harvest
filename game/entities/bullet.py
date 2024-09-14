@@ -31,3 +31,18 @@ class Bullet(pygame.sprite.Sprite):
         bullet_rect = rotated_image.get_rect(center=self.position)
         return rotated_image, bullet_rect 
     
+
+class BossBullet(Bullet):
+    def __init__(self, x, y, bullet_area, rotation, damage, speed, direction):
+        super().__init__(x, y, bullet_area, rotation, damage)
+        self.image, self.rect = self.get_sprite(pygame.image.load("ui/game_assets/missile00.png").convert_alpha())
+        self.speed = speed
+        self.damage = damage
+        self.velocity = pygame.Vector2(direction).normalize() * speed
+
+    def update(self, dt, screen_bounds):
+        self.rect.x += self.velocity.x * dt
+        self.rect.y += self.velocity.y * dt
+        if (self.rect.right < 0 or self.rect.left > screen_bounds.width or
+            self.rect.bottom < 0 or self.rect.top > screen_bounds.height):
+            self.kill()

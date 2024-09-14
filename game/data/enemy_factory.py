@@ -3,6 +3,7 @@ import random
 from game.data import settings
 
 from game.entities.enemy_fighters import WhiteEnemyFighter, BlackEnemyFighter, YellowEnemyFighter
+from game.entities.bosses import Boss1
 
 class EnemyFactory():
     def __init__(self, screen_bounds, game_state):
@@ -58,6 +59,11 @@ class EnemyFactory():
         for _ in range(15):
             enemy = self.spawn_enemy()
         return enemy
+    
+    def spawn_boss(self):
+        _spawn = Boss1(settings.SCREEN_WIDTH // 2, settings.SCREEN_HEIGHT * -0.1)
+        self.add_group(_spawn)
+        return _spawn
 
     def update(self, dt, game_time):
         self.spawn_timer -= dt

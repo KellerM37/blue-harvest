@@ -22,29 +22,14 @@ class BaseEnemy(pygame.sprite.Sprite):
         self.health_capacity = health_capacity
         self.current_health = health_capacity
         self.point_value = point_value
+        self.hit_by_bomb = False
+        self.bomb_immunity = 0
 
-    def kill(self):
-        self.health_bar.kill()
-        super().kill()
-
-    def draw(self, screen):
-        screen.blit(self.image, self.rect)
-        if self.screen is None:
-            self.screen = screen
-
-    def update(self, dt, screen_bounds):
-        self.shot_timer -= dt
-        self.position.y += self.speed * dt
-        self.rect.y = self.position.y
-        self.bullets.update(dt, screen_bounds)
-        if self.current_health < self.health_capacity:
-            self.health_bar.show()
-            self.health_bar.set_relative_position((self.rect.centerx - 50, self.rect.centery - 50))
-        if self.shot_timer <= 0:
-            self.shoot()
-            pass
-        if self.position.y > screen_bounds.height:
-            self.kill()
+    def get_sprite(self, image):
+        self.image = image
+        self.image = pygame.transform.rotate(self.image, -90)
+        self.rect = image.get_rect(center=self.position)
+        return self.image, self.rect
 
     def shoot(self):
         bullet = Bullet(self.position.x, self.position.y + 50, pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT), rotation=180)
@@ -58,7 +43,7 @@ class BaseEnemy(pygame.sprite.Sprite):
                                                  self,
                                                  anchors={"top": "top", "centery": "centery", "centery_target": self.rect},
                                                  visible=False)
-        
+    
     def enemy_damaged(self, enemy, game_state, damage):
         enemy.current_health -= damage
         if enemy.current_health <= 0:
@@ -73,5 +58,29 @@ class BaseEnemy(pygame.sprite.Sprite):
         game_state.kill_display.set_text(f"Kills: {game_state.kill_count}")
         game_state.score_display.set_text(f"Score: {game_state.player.score}")
 
-    def get_sprite(self, image):
-        pass
+    def kill(self):
+        self.health_bar.kill()
+        super().kill()
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+        if self.screen is None:
+            self.screen = screen
+
+    def update(self, dt, screen_bounds):
+        self.shot_timer -= dt
+        self.bomb_immunity -= dt
+        
+        self.position.y += self.speed * dt
+        self.rect.center = self.position
+        self.bullets.update(dt, screen_bounds)
+        if self.current_health < self.health_capacity:
+            self.health_bar.show()
+            self.health_bar.set_relative_position((self.rect.centerx - 50, self.rect.centery - 50))
+        if self.shot_timer <= 0:
+            self.shoot()
+            pass
+        if self.position.y > screen_bounds.height:
+            self.kill()
+        
+ 

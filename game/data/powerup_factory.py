@@ -12,12 +12,10 @@ class PowerupFactory():
         self.screen_bounds = screen_bounds
 
         self.spawn_timer = 0
-        self.spawnable_heart = False
-        self.spawnable_bomb = False
-        self.heart_timer = 120
-        self.speed_timer = 100
-        self.ally_timer = 1
-        self.bomb_timer = 1
+        self.heart_timer = 30
+        self.speed_timer = 50
+        self.ally_timer = 10
+        self.bomb_timer = 60
 
     def spawn_point(self):
         return (random.randint(self.spawn_area.left, self.spawn_area.right), self.spawn_area.top)
@@ -27,37 +25,19 @@ class PowerupFactory():
         self.game_state.updatable.add(powerup)
         self.game_state.powerups.add(powerup)
 
-    def update(self, dt):
-        self.spawn_timer -= dt
-        self.heart_timer -= dt
-        self.speed_timer -= dt
-        self.bomb_timer -= dt
-        self.ally_timer -= dt
-
-        heart_powerup_exists = any(x.name == "heart_powerup" for x in self.existing_powerups)
-        if self.player.lives < 3 and not heart_powerup_exists:
-            self.spawnable_heart = True
-        else:
-            self.spawnable_heart = False
-
-        bomb_powerup_exists = any(x.name == "bomb_powerup" for x in self.existing_powerups)
-        if self.player.bombs < 2 and not bomb_powerup_exists:
-            self.spawnable_bomb = True
-        else:
-            self.spawnable_bomb = False
-
+    def check_spawn(self):
         if self.ally_timer <= 0 and len(self.player._allies) < 2:
             self.ally_timer = 45
             _spawn = WingmanPowerup(*self.spawn_point(), self.screen_bounds)
             self.add_group(_spawn)
             return _spawn
-        if self.heart_timer <= 0 and self.spawnable_heart:
-            self.heart_timer = 120
+        if self.heart_timer <= 0 and len(self.player.hearts) < 3:
+            self.heart_timer = 45
             _spawn = HeartPowerup(*self.spawn_point(), self.screen_bounds)
             self.spawnable_heart = False
             self.add_group(_spawn)
             return _spawn
-        elif self.bomb_timer <= 0 and self.spawnable_bomb:
+        elif self.bomb_timer <= 0 and self.player.bombs < 3:
             self.bomb_timer = 90
             _spawn = BombPowerup(*self.spawn_point(), self.screen_bounds)
             self.spawnable_bomb = False
@@ -67,5 +47,12 @@ class PowerupFactory():
             self.speed_timer = 100
             _spawn = SpeedPowerup(*self.spawn_point(), self.screen_bounds)
             self.add_group(_spawn)
-            return _spawn        
-        return None
+            return _spawn  
+
+    def update(self, dt):
+        self.spawn_timer -= dt
+        self.heart_timer -= dt
+        self.speed_timer -= dt
+        self.ally_timer -= dt
+        self.bomb_timer -= dt
+        self.check_spawn()

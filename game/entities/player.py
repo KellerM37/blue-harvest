@@ -6,6 +6,8 @@ from pygame_gui.elements import UIImage
 from game.data.settings import SCREEN_WIDTH, SCREEN_HEIGHT
 from game.entities.bullet import Bullet
 
+from game.entities.bosses import Boss1
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, ui_manager, game_state):
         super().__init__()
@@ -15,7 +17,7 @@ class Player(pygame.sprite.Sprite):
         
         self.bullets = pygame.sprite.Group()
         self._allies = pygame.sprite.Group()
-        self.image, self.rect = self.get_sprite(pygame.image.load("ui/game_assets/Ships maybe/destroyer.png").convert_alpha())
+        self.image, self.rect = self.get_sprite(pygame.image.load("ui/game_assets/Ships maybe/cruiser.png").convert_alpha())
         self.rect.center = self.position
         self.heart_bool, self.speed_bool, self.weapon_bool = False, False, False
         self.screen_bounds = pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -37,10 +39,10 @@ class Player(pygame.sprite.Sprite):
         self.bomb_timer = 0
         self.bombs_ui = []
         self.has_powerup = False
-        self.allies = []
+        self.ally = {"left": None, "right": None}
 
     def get_sprite(self, image):
-        ship_sprite = pygame.transform.scale(image, (100, 95))
+        ship_sprite = pygame.transform.scale(image, (85, 60))
         ship_sprite = pygame.transform.rotate(ship_sprite, 90)
         ship_rect = ship_sprite.get_rect(center=self.position)
         return ship_sprite, ship_rect 
@@ -63,12 +65,18 @@ class Player(pygame.sprite.Sprite):
             bullet.velocity = pygame.Vector2(0, self.bullet_speed)
             self.bullets.add(bullet)
             self.shot_timer = 0.3
-            for ally in self.allies:
+            for ally in self._allies:
                 ally.shoot()
     
     def hit_by_bullet(self, damage):
-        self.current_health -= damage
-        self.check_alive(self.game_state)
+        if len(self._allies) > 0:
+            if self.ally["left"] and not self.ally["right"]:
+                self.ally["left"].take_damage(damage * 3)
+            if self.ally["right"]:
+                self.ally["right"].take_damage(damage * 3)
+        else:
+            self.current_health -= damage
+            self.check_alive(self.game_state)
     
     def hit_enemy_ship(self):
         self.current_health -= 50
@@ -140,11 +148,15 @@ class Player(pygame.sprite.Sprite):
             self.move_hor(dt, -1)
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             self.move_hor(dt, 1)
-        if keys[pygame.K_b] and self.bombs > 0:
-            if self.bomb_timer <= 0:
-                self.bomb_timer = 1
-                self.bombs -= 1
-                self.game_state.detonate_bomb()
+        if self.bombs > 0:
+            if keys[pygame.K_e] or keys[pygame.K_h]:
+                if self.bomb_timer <= 0:
+                    self.bomb_timer = 1
+                    self.bombs -= 1
+                    self.game_state.detonate_bomb()
+        if keys[pygame.K_k]:
+            boss = Boss1(SCREEN_WIDTH // 2, 0)
+            boss.add(self.game_state.drawable, self.game_state.updatable, self.game_state.enemies)
         if keys[pygame.K_SPACE] and self.shot_timer <= 0:
             for ally in self._allies:
                 ally.shoot()
@@ -168,24 +180,54 @@ class Player(pygame.sprite.Sprite):
 
 
 class Wingman(pygame.sprite.Sprite):
-    def __init__(self, x, y, player, game_state, offset):
+    def __init__(self, x, y, player, game_state, offset, screen):
         super().__init__()
         self.position = pygame.Vector2(x, y)
+        self.image, self.rect = self.get_sprite(pygame.image.load("ui/game_assets/Ships maybe/destroyer.png").convert_alpha())
         self.player = player
         self.game_state = game_state
-        self.image = pygame.image.load("ui/game_assets/Ships maybe/destroyer.png").convert_alpha()
+        self.x_offset = offset
+        self.screen = screen
+        self.rotation = -90
+        self.bullet_speed = -700
+        self.current_health = 50
+        self.health_capacity = 50
+        self.is_right = False
+        self.draw_health_bar()
+
+    def get_sprite(self, image):
+        self.image = image
         self.image = pygame.transform.scale(self.image, (60, 50))
         self.image = pygame.transform.rotate(self.image, 90)
         self.rect = self.image.get_rect(center=self.position)
-        self.rotation = -90
-        self.bullet_speed = -700
-        self.health = 50
-        self.x_offset = offset
+        return self.image, self.rect
 
     def shoot(self):
         bullet = Bullet(self.position.x, self.position.y, pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT), 0, 50)
         bullet.velocity = pygame.Vector2(0, self.bullet_speed)
         self.player.bullets.add(bullet)
+
+    def take_damage(self, damage):
+        self.current_health -= damage
+        if self.current_health <= 0:
+            self.remove()
+
+    def remove(self):
+        if self.is_right:
+            self.player.ally["right"] = None
+            self.kill()
+            self.health_bar.kill()
+        else:
+            self.player.ally["left"] = None
+            self.kill()
+            self.health_bar.kill()
+
+    def draw_health_bar(self):
+        self.health_bar = pygame_gui.elements.UIScreenSpaceHealthBar(pygame.Rect(0, 0, 100, 10),
+                                                 self.screen,
+                                                 self,
+                                                 anchors={"top": "top", "centery": "centery", "centery_target": self.rect},
+                                                 visible=False)
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
@@ -194,3 +236,6 @@ class Wingman(pygame.sprite.Sprite):
         self.position.x = player.position.x + self.x_offset
         self.position.y = player.position.y + 60
         self.rect.center = self.position
+        if self.current_health < self.health_capacity:
+            self.health_bar.show()
+            self.health_bar.set_relative_position((self.rect.centerx - 50, self.rect.centery - 50))
