@@ -130,8 +130,7 @@ class Player(pygame.sprite.Sprite):
                 bomb_ui.show()
             else:
                 bomb_ui.hide()
-
-    def kill_boost(self):
+    def kill_boost(self):           # TODO make this less dumbly done
         if self.speed_bool == True:
             print("Speed powerup removed")
             self.speed_bool = False

@@ -1,10 +1,10 @@
 # Program deets
 TITLE = "Blue Harvest"
 GAME_TITLE = "Fly & Shoot"
-VERSION = "0.01.42"
+VERSION = "0.01.44"
 AUTHOR = "KellerM37"
 INITIAL_STATE = "main_menu"
-LEADERBOARD_MAX_LENGTH = 10
+LEADERBOARD_MAX_LENGTH = 10 # TODO: Make this do a thing
 
 # Default settings
 DEFAULT_SCREEN_WIDTH = 1280

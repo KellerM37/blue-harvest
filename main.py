@@ -1,7 +1,5 @@
 import pygame
 import pygame_gui
-import sys
-import os
 from game.data.settings import *
 
 from game.data.gamestate_manager import GamestateManager
@@ -9,7 +7,6 @@ from game.data.gamestate_manager import GamestateManager
 
 def main():
     # Initializing pygame, window, delta_time, and UI master
-    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN if FULLSCREEN else 0)
     icon = pygame.image.load("ui/LOGO.jpeg")
@@ -25,7 +22,7 @@ def main():
     gamestate_manager.load_states(ui_manager, gamestate_manager)
     gamestate_manager.set_initial_state(INITIAL_STATE)
 
-    # The almighty gameloop
+    # The almighty game loop
     while is_running:
         dt = clock.tick(60) / 1000
         is_running = gamestate_manager.run(screen, dt)
